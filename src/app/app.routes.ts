@@ -26,10 +26,16 @@ export const routes: Routes = [
   },
 
   {
-    path: 'auth',
-    title: 'Auth',
+    path: 'login',
+    title: 'Log In - MiniTrello',
     loadComponent: () => import('./views/auth/auth.component')
   },
+  {
+    path: 'signup',
+    title: 'Sign Up - MiniTrello',
+    loadComponent: () => import('./views/register/register.component')
+  },
+
   {
 
     path: '',

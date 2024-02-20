@@ -10,8 +10,14 @@ export class ThemeService {
   getTheme(){
     if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
       return localStorage.getItem('theme');
+    }else if(typeof localStorage !== 'undefined' ){
+      localStorage.setItem('theme', 'dark');
+      document.body.classList.add('dark');
+      return 'dark';
+    }else{
+      return 'dark'
     }
-    return 'light';
+
   }
 
   veryfyTheme(){
