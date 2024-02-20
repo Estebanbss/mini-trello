@@ -24,6 +24,12 @@ export const routes: Routes = [
     ]
 
   },
+
+  {
+    path: 'auth',
+    title: 'Auth',
+    loadComponent: () => import('./views/auth/auth.component')
+  },
   {
 
     path: '',
