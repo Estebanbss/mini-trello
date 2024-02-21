@@ -1,1 +1,62 @@
-<p>register works!</p>
+<section class="min-h-screen bg-slate-100 flex justify-center items-center">
+  <div style="view-transition-name: hero1;" class="absolute pointer-events-none p-8 w-full md:w-[400px] h-full md:h-[500px] bg-white shadow-lg z-0 -rotate-3 -translate-x-10 flex flex-col items-center">
+    <div class="w-[150px] mx-auto">
+      <img src="assets/Img/trelloPurple.svg"/>
+    </div>
+    <h1 class="text-center text-lg text-gray-600 font-semibold my-6">Log in to continue</h1>
+    <input type="email"  class="w-full focus:bg-white focus:outline-indigo-700 h-10 border-2 bg-gray-100 p-2 my-2" placeholder="Enter your email">
+    <div class="w-full h-10 my-2 flex flex-row items-center justify-center relative">
+      <input  type="password" class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   " placeholder="Enter your password">
+      <button class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
+
+        @if (type() == 'password') {
+          <img class="object-cover" src="assets/Img/eyeOf.svg" />
+        }
+        @else {
+          <img class="object-cover" src="assets/Img/eyeOp.svg" />
+        }
+
+
+      </button>
+    </div>
+    <button class="w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm">Continue</button>
+    <div class="w-full flex flex-row items-center justify-center">
+      <a class="text-indigo-600 ml-1" [routerLink]="['/signup']" >Create an account</a>
+      </div>
+
+  </div>
+
+
+  <div style="view-transition-name: hero2;" class="absolute p-8 w-full md:w-[400px] h-full md:h-[500px] bg-white shadow-lg z-20 flex flex-col items-center ">
+    <div class="w-[150px] mx-auto">
+      <img src="assets/Img/trelloPurple.svg"/>
+    </div>
+
+    <h1 class="text-center text-lg text-gray-600 font-semibold my-6">Sign up to continue</h1>
+    <input type="email" autocomplete="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border-2 bg-gray-100 p-2 my-2" placeholder="Enter your email">
+    <div class="w-full h-10 my-2 flex flex-row items-center justify-center relative">
+      <input id="password" type="password" autocomplete="current-password" class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   " placeholder="Enter your password">
+      <button class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
+
+        @if (type() == 'password') {
+          <img class="object-cover" src="assets/Img/eyeOf.svg" />
+        }
+        @else {
+          <img class="object-cover" src="assets/Img/eyeOp.svg" />
+        }
+
+
+      </button>
+    </div>
+    <button class="w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm">Register</button>
+    <div class="w-full flex flex-row items-center justify-center">
+      <a class="text-indigo-600 ml-1" [routerLink]="['/login']" >Already have an account? Log in</a>
+      </div>
+  </div>
+
+
+
+  <img class="absolute w-80 bottom-1 hidden md:block left-0 pointer-events-none" src="assets/Img/board.svg" />
+  <img class="absolute w-80 bottom-1 right-0 hidden md:block pointer-events-none" src="assets/Img/class.svg" />
+</section>
+
