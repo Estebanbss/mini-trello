@@ -1,59 +1,127 @@
-<section class="min-h-screen bg-slate-100 flex justify-center items-center">
-  <div style="view-transition-name: hero1;" class="absolute pointer-events-none p-8 w-full md:w-[400px] h-full md:h-[500px] bg-white shadow-lg z-0 -rotate-3 -translate-x-10 flex flex-col items-center">
+<section class="min-h-[500px] h-screen bg-slate-100 flex justify-center items-center">
+
+
+  <div style="view-transition-name: hero2;" class="absolute p-8 w-full md:w-[400px] h-full md:h-[500px] bg-white shadow-lg z-20  flex flex-col items-center">
     <div class="w-[150px] mx-auto">
+      <h1 class="hidden">Mini Trello</h1>
       <img src="assets/Img/trelloPurple.svg"/>
     </div>
-    <h1 class="text-center text-lg text-gray-600 font-semibold my-6">Log in to continue</h1>
-    <input type="email"  class="w-full focus:bg-white focus:outline-indigo-700 h-10 border-2 bg-gray-100 p-2 my-2" placeholder="Enter your email">
-    <div class="w-full h-10 my-2 flex flex-row items-center justify-center relative">
-      <input  type="password" class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   " placeholder="Enter your password">
-      <button class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
 
-        @if (type() == 'password') {
-          <img class="object-cover" src="assets/Img/eyeOf.svg" />
+    @if (data.get('email')?.hasError('required') && data.get('email')?.touched) {
+      <span class="text-center text-lg text-white font-semibold my-6 bg-red-500 w-full">
+        <strong>Email</strong> is required
+      </span>
+    }@else if (data.get('pwd')?.hasError('required') && data.get('pwd')?.touched){
+      <span class="text-center text-lg text-white font-semibold my-6 bg-red-500 w-full">
+        <strong>Password</strong> is required.
+      </span>
+    }@else if(data.get('email')?.hasError('email') && data.get('email')?.touched){
+      <span  class="text-center text-lg text-white font-semibold my-6 bg-red-500 w-full">
+        <strong>Email</strong> is invalid
+       </span>
+    }@else{
+      <span class="text-center text-lg text-gray-600 font-semibold my-6">Create an account</span>
+    }
+
+    <form class="w-full" (ngSubmit)="submit()" [formGroup]="data!">
+
+      <div class="w-full h-10 my-2 flex  items-center justify-center relative flex-col">
+      <input autofocus autocapitalize="false" spellcheck="false" inputmode="email"id="email" autocomplete="" type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border-2 bg-gray-100 p-2 my-2" placeholder="Enter your email" formControlName="email" placeholder="Correo" required>
+
+
+      </div>
+
+      <div class="w-full h-10 my-2 flex flex-col items-center justify-center relative">
+        <div class="w-full flex-row flex items-center justify-center">
+          <input autofocus spellcheck="false" autocapitalize="none" name="password" id="password"   type="password" autocomplete="hidden" class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   " formControlName="pwd" placeholder="Enter your password" required>
+          <span id="eye" class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
+              <img class="object-cover" [src]="type() === 'password' ? 'assets/Img/eyeOf.svg' : 'assets/Img/eyeOp.svg'"/>
+          </span>
+        </div>
+
+      </div>
+
+      <div class="w-full h-10 my-2 flex flex-col items-center justify-center relative">
+        <div class="w-full flex-row flex items-center justify-center">
+          <input autofocus spellcheck="false" autocapitalize="none" name="password" id="passwordconfirm"  type="password" autocomplete="hidden" class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   " formControlName="pwd" placeholder="Confirm password" required>
+          <span id="eye" class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
+              <img class="object-cover" [src]="type() === 'password' ? 'assets/Img/eyeOf.svg' : 'assets/Img/eyeOp.svg'"/>
+          </span>
+        </div>
+
+      </div>
+
+    <button type="submit" [disabled]="data.invalid"
+    [ngClass]="data.invalid ? 'w-full h-10 bg-indigo-800 text-white font-semibold my-2 rounded-sm opacity-50 flex flex-row justify-center items-center' : 'w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm flex flex-row justify-center items-center'">
+        @if(loading()){
+          <svg aria-hidden="true" class="w-8 h-8 animate-spin  fill-indigo-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+        </svg>
+        }@else{
+          Create
         }
-        @else {
-          <img class="object-cover" src="assets/Img/eyeOp.svg" />
-        }
+    </button>
+    </form>
+
+    <div class="w-full flex flex-row items-center justify-center">
+      <a class="text-indigo-600 ml-1" [routerLink]="['/login']" >Already have an account?</a>
+      </div>
+
+      <div class="w-full border-t-2 mt-auto">
+        <p class="font-semibold text-sm text-gray-400 text-center">Build by &commat;Estebanss</p>
+      </div>
+  </div>
 
 
-      </button>
+  <div style="view-transition-name: hero1;" class="absolute pointer-events-none p-8 w-full md:w-[400px] h-full md:h-[500px] bg-white shadow-lg z-0 -translate-x-10 -rotate-3 flex flex-col items-center">
+    <div class="w-[150px] mx-auto">
+      <h1 class="hidden">Mini Trello</h1>
+      <img src="assets/Img/trelloPurple.svg"/>
     </div>
-    <button class="w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm">Continue</button>
+
+
+      <span class="text-center text-lg text-gray-600 font-semibold my-6">Log in to continue</span>
+
+
+
+      <div class="w-full h-10 my-2 flex  items-center justify-center relative flex-col">
+      <input autofocus autocapitalize="false" spellcheck="false"  id="username"   class="w-full focus:bg-white focus:outline-indigo-700 h-10 border-2 bg-gray-100 p-2 my-2" placeholder="Enter your email" placeholder="Correo">
+
+
+      </div>
+
+      <div class="w-full h-10 my-2 flex flex-col items-center justify-center relative">
+        <div class="w-full flex-row flex items-center justify-center">
+          <input autofocus spellcheck="false" autocapitalize="none" name="password"   type="password"  class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   "  placeholder="Enter your password" required>
+          <span id="eye" class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
+              <img class="object-cover" [src]="type() === 'password' ? 'assets/Img/eyeOf.svg' : 'assets/Img/eyeOp.svg'"/>
+          </span>
+        </div>
+
+      </div>
+
+    <button type="submit" disabled
+    [ngClass]="data.invalid ? 'w-full h-10 bg-indigo-800 text-white font-semibold my-2 rounded-sm opacity-50 flex flex-row justify-center items-center' : 'w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm flex flex-row justify-center items-center'">
+        @if(loading()){
+          <svg aria-hidden="true" class="w-8 h-8 animate-spin  fill-indigo-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+        </svg>
+        }@else{
+          Continue
+        }
+    </button>
+
+
     <div class="w-full flex flex-row items-center justify-center">
       <a class="text-indigo-600 ml-1" [routerLink]="['/signup']" >Create an account</a>
       </div>
 
-  </div>
-
-
-  <div style="view-transition-name: hero2;" class="absolute p-8 w-full md:w-[400px] h-full md:h-[500px] bg-white shadow-lg z-20 flex flex-col items-center ">
-    <div class="w-[150px] mx-auto">
-      <img src="assets/Img/trelloPurple.svg"/>
-    </div>
-
-    <h1 class="text-center text-lg text-gray-600 font-semibold my-6">Sign up to continue</h1>
-    <input type="email" autocomplete="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border-2 bg-gray-100 p-2 my-2" placeholder="Enter your email">
-    <div class="w-full h-10 my-2 flex flex-row items-center justify-center relative">
-      <input id="password" type="password" autocomplete="current-password" class="w-full focus:bg-white focus:outline-indigo-700 border-2 bg-gray-100 p-2   " placeholder="Enter your password">
-      <button class="absolute right-1 flex items-center justify-center   text-white w-[30px] h-[30px] rounded-full" (click)="toggleType()">
-
-        @if (type() == 'password') {
-          <img class="object-cover" src="assets/Img/eyeOf.svg" />
-        }
-        @else {
-          <img class="object-cover" src="assets/Img/eyeOp.svg" />
-        }
-
-
-      </button>
-    </div>
-    <button class="w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm">Register</button>
-    <div class="w-full flex flex-row items-center justify-center">
-      <a class="text-indigo-600 ml-1" [routerLink]="['/login']" >Already have an account? Log in</a>
+      <div class="w-full border-t-2 mt-auto">
+        <p class="font-semibold text-sm text-gray-400 text-center">Build by &commat;Estebanss</p>
       </div>
   </div>
-
 
 
   <img class="absolute w-80 bottom-1 hidden md:block left-0 pointer-events-none" src="assets/Img/board.svg" />

@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Token } from '@angular/compiler';
+import { Token } from '../../interfaces/user';
+import { CookieService } from 'ngx-cookie-service';
+
 
 
 
@@ -21,16 +23,17 @@ import { Token } from '@angular/compiler';
 })
 export default class AuthComponent {
   private authService = inject(AuthService);
-  data: FormGroup;
-  fb = inject(FormBuilder);
+  private fb = inject(FormBuilder);
+  private cookies = inject(CookieService);
+  private router = inject(Router);
   loading = signal(false);
-  router = inject(Router);
   type = signal('password')
+  data: FormGroup;
 
   constructor(){
     this.data = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      pwd: ['', [Validators.required, Validators.minLength(4)]].toString()
+      pwd: ['', [Validators.required, Validators.minLength(4)]]
     });
   }
 
@@ -52,30 +55,19 @@ export default class AuthComponent {
   submit(){
       this.loading.set(true);
       let token = this.authService.login(this.data.value)
+
       token.subscribe(
-        (res:string) => {
-          if (res === 'e') {
-            this.loading.set(false);
-            return;
-          }
-          const result = res[0];
-          if(result[0]){
-            console.log(result[0]);
-          }
-          console.log(result[1]);
-
-          this.loading.set(false);
-
-          console.log(token);
-
-
+            (res) => {
+           this.loading.set(false);
+           let token = res as unknown as Token;
+           this.cookies.set('token', token.token)
+           this.router.navigate(['']);
         },
         (err) => {
           this.loading.set(false);
           console.log(err);
         }
       )
-
   }
 
 }

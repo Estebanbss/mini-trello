@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "http://www.trelloclone.somee.com/",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
