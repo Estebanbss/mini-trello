@@ -53,19 +53,20 @@ export class AuthService {
 
 
   async isTokenExpired(token: string): Promise<{ expired: boolean, timeRemaining: number }> {
-    console.log("Token:", token);
+
     const arrayToken = token.split('.');
 
     return new Promise((resolve, reject) => {
       try {
         const tokenPayload = JSON.parse(atob(arrayToken[1]));
-        console.log(tokenPayload);
+        this.cookies.set('user.email', tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'])
+        this.cookies.set('user.name', tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'])
+        this.cookies.set('user.type', tokenPayload['AType'])
+
+
 
         const currentTimeInSeconds = Math.floor(new Date().getTime() / 1000);
         const timeUntilExpiration = tokenPayload?.exp - currentTimeInSeconds;
-
-        console.log("Time until expiration:", timeUntilExpiration, "seconds");
-        console.log("Is token expired?", currentTimeInSeconds >= tokenPayload?.exp);
 
         resolve({
           expired: currentTimeInSeconds >= tokenPayload?.exp,

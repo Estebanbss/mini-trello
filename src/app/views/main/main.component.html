@@ -1,5 +1,5 @@
 
-<app-header class="block mb-[48px]"/>
+<app-header class="block mb-[48px] z-50"/>
 <main  class="main">
 
 
@@ -8,8 +8,130 @@
     dark:bg-gray-800
       scrollbar dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-600 -z-10 flex  justify-center">
 
-      <div class="max-w-[1111px] w-full bg-white bg-opacity-15">
+      <div class="max-w-[1111px] w-full flex flex-row  mt-10 p-2">
+        <div class="hidden md:w-[30%] md:flex flex-col  h-full gap-2 ">
+          <button (click)="button.set('Boards')" [ngClass]="[button() == 'Boards'? 'fill-blue-500 hover:bg-blue-500 hover:bg-opacity-30 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800 w-[256px] h-[36px] mr-auto text-left p-4 py-5 font-semibold  flex gap-2 items-center rounded-xl  dark:hover:bg-opacity-15' :'w-[256px] h-[36px] hover:bg-black hover:bg-opacity-15 mr-auto text-left p-4 py-5 font-semibold dark:text-white flex gap-2 items-center rounded-xl  dark:bg-white dark:bg-opacity-0 dark:hover:bg-opacity-15 dark:fill-white']">
+            <svg width="16px" height="16px" class="" viewBox="0 0 256 256" version="1.1" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+                  <stop stop-color="#0091E6" offset="0"/>
+                  <stop stop-color="#0079BF" offset="1"/>
+                </linearGradient>
+              </defs>
+              <g>
+                <g>
+                  <path d="M 25 0 L 231 0 C 244.807 0 256 11.193 256 25 L 256 231 C 256 244.807 244.807 256 231 256 L 25 256 C 11.193 256 0 244.807 0 231 L 0 25 C 0 11.193 11.193 0 25 0 Z M 144.64 45.28 L 144.64 133.28 C 144.64 139.907 150.013 145.28 156.64 145.28 L 210.72 145.28 C 217.347 145.28 222.72 139.907 222.72 133.28 L 222.72 45.28 C 222.72 38.653 217.347 33.28 210.72 33.28 L 156.64 33.28 C 150.013 33.28 144.64 38.653 144.64 45.28 Z M 33.28 45.28 L 33.28 197.28 C 33.28 203.907 38.653 209.28 45.28 209.28 L 99.36 209.28 C 105.987 209.28 111.36 203.907 111.36 197.28 L 111.36 45.28 C 111.36 38.653 105.987 33.28 99.36 33.28 L 45.28 33.28 C 38.653 33.28 33.28 38.653 33.28 45.28 Z" />
+                </g>
+              </g>
+            </svg>
+            Boards
+          </button>
+          <button (click)="button.set('Home')" [ngClass]="[button() == 'Home'? 'fill-blue-500 hover:bg-blue-500 hover:bg-opacity-30 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800 w-[256px] h-[36px] mr-auto text-left p-4 py-5 font-semibold  flex gap-2 items-center rounded-xl  dark:hover:bg-opacity-15' :'w-[256px] h-[36px] hover:bg-black hover:bg-opacity-15 mr-auto text-left p-4 py-5 font-semibold dark:text-white flex gap-2 items-center rounded-xl  dark:bg-white dark:bg-opacity-0 dark:hover:bg-opacity-15 dark:fill-white']" >
+            <svg width="16px" height="16px" class="" viewBox="0 0 256 256" version="1.1" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 31.999 227.555 L 80 227.555 L 80 142.222 L 175.999 142.222 L 175.999 227.555 L 223.998 227.555 L 223.998 99.556 L 127.999 35.555 L 31.999 99.556 L 31.999 227.555 Z M 0 256 L 0 85.333 L 127.999 0 L 256 85.333 L 256 256 L 143.999 256 L 143.999 170.667 L 111.999 170.667 L 111.999 256 L 0 256 Z M 127.999 131.555 Z"/>
+            </svg>
+            Home
+          </button>
 
+          <hr class="border-gray-800 dark:border-white">
+        </div>
+        <div class="relative md:w-[70%] flex">
+          <div class="w-full h-full" *ngIf="button() === 'Boards'">
+            <div class="md:w-[400px] md:min-h-[400px] mx-auto">
+              @if(boards.length > 0){
+                <h2 class="font-bold dark:text-white">Boards</h2>
+                <hr class="border-gray-800 dark:border-white my-5">
+                <div class="grid grid-cols-2 gap-4">
+                  <div *ngFor="let board of boards" class="bg-white dark:bg-slate-700 shadow-xl rounded-xl p-4">
+                    <h3 class="font-bold dark:text-white">{{board.name}}</h3>
+                    <p class="dark:text-gray-400 text-gray-800">{{board.description}}</p>
+                  </div>
+                </div>
+              }@else {
+                <h2 class="font-bold dark:text-white">Boards</h2>
+                <hr class="border-gray-800 dark:border-white my-5">
+                <button id="ButtonC" (click)="buttonCreateBoard.set(!buttonCreateBoard())" [ngClass]="[button() == 'B'? 'fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800 w-[256px] h-[36px] mr-auto text-left p-4 py-5 font-semibold  flex gap-2 items-center rounded-sm  dark:hover:bg-opacity-15' :' h-[36px] mr-auto text-left p-4 py-5 font-semibold dark:text-white flex gap-2 items-center rounded-sm  dark:bg-white dark:bg-opacity-0 dark:hover:bg-opacity-15 dark:fill-white']">
+                  <span class=" w-[30px] h-[30px] bg-slate-200 dark:bg-slate-600 flex justify-center items-center rounded-sm p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                  </span>
+
+                  Create a board
+                </button>
+                <div id="ContentD" *ngIf="buttonCreateBoard()" class=" max-w-[300px] min-w-[250px] shadow-xl dark:bg-gray-700 mt-3 mx-auto rounded-xl bg-white dark:border-gray-500 border-[0.5px] p-2">
+                  <h3 class="dark:text-gray-400 text-sm text-gray-800 text-center">Create a new board</h3>
+                  <form class="w-full" (ngSubmit)="submit()" [formGroup]="name!">
+                    <p class="dark:text-gray-400 text-sm text-gray-800 mt-5">Board name</p>
+                    <input autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2" placeholder="Enter your email" formControlName="name" placeholder="" required>
+                    @if (name.get('name')?.hasError('required') && name.get('name')?.touched) {
+                      <span class="text-center text-sm  font-semibold my-6 text-red-600 w-full">
+                        <strong>☹️ Board title</strong> is required
+                      </span>
+                    }@else{
+                      <span class="text-center text-sm dark:text-white text-gray-600 font-semibold my-6">Nice 👍</span>
+                    }
+
+                    <button type="submit" [disabled]="name.invalid"
+                    [ngClass]="name.invalid ? 'w-full h-10 bg-indigo-800 text-white font-semibold my-2 rounded-sm opacity-50 flex flex-row justify-center items-center' : 'w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm flex flex-row justify-center items-center'">
+                        @if(loading()){
+                          <svg aria-hidden="true" class="w-8 h-8 animate-spin  fill-indigo-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                        </svg>
+                        }@else{
+                          Create
+                        }
+                    </button>
+                  </form>
+
+              </div>
+              }
+            </div>
+          </div>
+          <div  class="w-full h-full" *ngIf="button() === 'Home'">
+              <div class="md:w-[400px] md:min-h-[400px] mx-auto">
+                <img class="object-cover" src="assets/Img/dog.png">
+                <div class="h-[150px]  shadow-xl p-4 rounded-b-xl mb-5">
+                  <h1 class="text-2xl font-bold dark:text-white text-center">Welcome to MiniTrello</h1>
+                  <p class="dark:text-gray-400 text-gray-800 text-center">Organize your boards in a more practical way.</p>
+                </div>
+                <button id="ButtonD" (click)="buttonCreateBoard2.set(!buttonCreateBoard2())"  [ngClass]="[button() == 'Boards'? 'fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800 w-[256px] h-[36px] mr-auto text-left p-4 py-5 font-semibold  flex gap-2 items-center rounded-sm  dark:hover:bg-opacity-15' :' h-[36px] mr-auto text-left p-4 py-5 font-semibold dark:text-white flex gap-2 items-center rounded-sm  dark:bg-white dark:bg-opacity-0 dark:hover:bg-opacity-15 dark:fill-white mx-auto']">
+                  <span class=" w-[30px] h-[30px] bg-slate-200 dark:bg-slate-600 flex justify-center items-center rounded-sm p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                  </span>
+                  Create a board
+                </button>
+
+                <div id="ContentC" *ngIf="buttonCreateBoard2()" class=" max-w-[300px] min-w-[250px] shadow-xl dark:bg-gray-700 mt-3 mx-auto rounded-xl bg-white dark:border-gray-500 border-[0.5px] p-2">
+                    <h3 class="dark:text-gray-400 text-sm text-gray-800 text-center">Create a new board</h3>
+                    <form class="w-full" (ngSubmit)="submit()" [formGroup]="name!">
+                      <p class="dark:text-gray-400 text-sm text-gray-800 mt-5">Board name</p>
+                      <input autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2" placeholder="Enter your email" formControlName="name" placeholder="" required>
+                      @if (name.get('name')?.hasError('required') && name.get('name')?.touched) {
+                        <span class="text-center text-sm  font-semibold my-6 text-red-600 w-full">
+                          <strong>☹️ Board title</strong> is required
+                        </span>
+                      }@else{
+                        <span class="text-center text-sm dark:text-white text-gray-600 font-semibold my-6">Nice 👍</span>
+                      }
+
+                      <button type="submit" [disabled]="name.invalid"
+                      [ngClass]="name.invalid ? 'w-full h-10 bg-indigo-800 text-white font-semibold my-2 rounded-sm opacity-50 flex flex-row justify-center items-center' : 'w-full h-10 bg-indigo-600 text-white font-semibold my-2 rounded-sm flex flex-row justify-center items-center'">
+                          @if(loading()){
+                            <svg aria-hidden="true" class="w-8 h-8 animate-spin  fill-indigo-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                              <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                          </svg>
+                          }@else{
+                            Create
+                          }
+                      </button>
+                    </form>
+
+                </div>
+              </div>
+
+          </div>
+        </div>
       </div>
 
      </section>

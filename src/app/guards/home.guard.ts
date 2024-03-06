@@ -15,10 +15,8 @@ export const homeGuard: CanActivateFn = async (route, state) => {
 
  if (isAuthenticated != null && isAuthenticated != undefined) {
      if (isAuthenticated) {
-         console.log('Está autenticado');
          return true;
      } else {
-         console.log('No está autenticado');
          router.navigate(['login']);
          cookies.delete('token');
          return false;

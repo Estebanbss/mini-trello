@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
 import { RouterModule } from '@angular/router';
+import { User } from '../../interfaces/user';
+import { MainService } from '../../services/main.service';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +14,7 @@ import { RouterModule } from '@angular/router';
   ],
   template: `
 
-<header class=" w-full   fixed  ">
+<header class=" w-full   fixed z-50 ">
     <nav class="bg-white     border-gray-800 border-b-[1px] border-opacity-15 p-[8px] max-h-[48px] min-h-[48px] h-[48px] dark:bg-gray-800 dark:border-b-[1px] dark:border-gray-100 dark:border-opacity-15 ">
 
         <div class="flex flex-wrap justify-between items-center mx-auto my-auto ">
@@ -33,6 +35,24 @@ import { RouterModule } from '@angular/router';
               </svg>
           </a>
         </div>
+        <div class="relative mr-auto">
+          <button id="Button" (click)="boardsS.set(!boardsS())" [ngClass]="[boardsS() ? 'flex hover:dark:bg-blue-900  p-1 px-3 gap-1 rounded-sm  flex-row items-center font-semibold hover:bg-opacity-30 hover:bg-blue-500 dark:font-semibold fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800' : 'flex p-1 px-3 gap-1 rounded-sm flex-row items-center dark:font-semibold font-semibold dark:fill-white dark:text-white hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15']"  >
+          Boards
+          <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+        </button>
+        <div id="Container" *ngIf="boardsS()" class="absolute max-w-[300px] min-w-[250px] shadow-xl dark:bg-gray-700 mt-3 -left-20 rounded-xl bg-white dark:border-gray-500 border-[0.5px] p-2">
+          @if(boards.length > 0){
+            <ul>
+              <li *ngFor="let board of boards">
+                <a [routerLink]="['/board', board.id]">{{board.name}}</a>
+              </li>
+            </ul>
+          }@else{
+            <img class="pointer-events-none" src="assets/Img/come.svg">
+            <p class="dark:text-gray-300 text-gray-700 text-center leading-4 my-5">You don't have boards, create one!</p>
+          }
+        </div>
+        </div>
         <div class="flex dark:bg-white  dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
             <button (click)="toggleTheme()" class="w-[24px] h-[24px]  rounded-full">
               @if (theme() === 'dark') {
@@ -44,8 +64,20 @@ import { RouterModule } from '@angular/router';
             </button>
         </div>
         <div class="flex dark:bg-white dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
-            <button  class="w-[24px] h-[24px] rounded-full ">
-              <img src="https://trello-members.s3.amazonaws.com/643d6e001b12d9430702765b/b32188bf7f9234834bc0b000e659bad7/30.png" class="object cover">
+            <button  class="w-[24px] h-[24px] rounded-full overflow-hidden">
+              @if (user.photo!==null || user.photo!==undefined){
+                <img [src]="user.photo" class="object cover">
+              }@else {
+                <svg class="fill-purple-500" width="24" height="24" viewBox="0 0 24 24">
+                <defs>
+                </defs>
+                <circle cx="12" cy="12" r="11" class="random-color" />
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="12">
+                  {{user.username.charAt(0)}}
+                </text>
+              </svg>
+
+              }
             </button>
         </div>
 
@@ -61,22 +93,43 @@ import { RouterModule } from '@angular/router';
 })
 export class HeaderComponent {
   themeService = inject(ThemeService)
-
+  mainService = inject(MainService)
+  user!: User;
+  boards:any = [];
   constructor() {
     this.themeService.getTheme();
     this.theme.set(this.themeService.getTheme());
+    const value = localStorage.getItem('user');
+    if(value !== null){
+      const parse = JSON.parse(value);
+      this.user = parse as unknown as User;
+    }
+    this.mainService.getBoards().then((res) => {
+      res.subscribe((data) => {
+        this.boards = data;
+      })
+    })
   }
-
+  @HostListener('document:click', ['$event'])
   theme = signal(this.themeService.getTheme());
-
+  perfil = signal(false);
+  boardsS = signal(false);
   // hacemos un signal para verificar el tema y dentro del computed verificamos si ya está definido en localstorage
   toggleTheme() {
     this.themeService.toggleTheme();
     this.theme.set(this.themeService.getTheme());
-    console.log(this.themeService.getTheme());
+
   }
 
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const Container = document.getElementById('Container');
+    const Button = document.getElementById('Button');
 
+    if (!Button?.contains(event.target as Node) && !Container?.contains(event.target as Node)) {
+      this.boardsS.set(false);
+        }
+  }
 
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
