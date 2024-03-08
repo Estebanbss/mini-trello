@@ -1,1 +1,11 @@
-<p>board works!</p>,
+<section class="max-h-screen h-[calc(100vh_-_48px)] dark:bg-sky-950  -z-10 flex  justify-center">
+<div class="h-[50px] bg-slate-800 w-full dark:bg-opacity-80 bg-opacity-50 p-2 px-5">
+  <button *ngIf="!editing" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startEditing()">
+    <h3>{{ boardName }}</h3>
+  </button>
+
+  <input *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()">
+
+</div>
+</section>
+<!-- scrollbar dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-600 scrollbar-track-gray-200 scrollbar-thumb-gray-400 -->

@@ -12,7 +12,7 @@ export const routes: Routes = [
     children:[
 
       {
-        path:'board/:id',
+        path:'board/:id/:boardName',
         canActivate: [homeGuard],
         title: 'Boards',
         loadComponent: () => import('./views/main/board/board.component')

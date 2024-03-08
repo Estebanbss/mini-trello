@@ -1,13 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { EventEmitter, Injectable, inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { catchError, throwError } from 'rxjs';
+import { catchError, of, throwError } from 'rxjs';
 import { Board } from '../interfaces/board';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainService {
+  boardCreated = new EventEmitter<void>();
+  noBoards = new EventEmitter<void>();
+  changeRoute = new EventEmitter<void>();
   constructor() { }
   private http = inject(HttpClient);
   private cookies = inject(CookieService);
@@ -17,6 +20,8 @@ export class MainService {
   private userId = this.cookies.get('user.id')
   private apiAccount = '/api/Account/getbyemail/' + this.userEmail
   private apiBoard = '/api/Board/'
+  private apiList = '/api/List/'
+  private apiCard = '/api/Card/'
 
 
   async getUserData() {
@@ -48,9 +53,14 @@ export class MainService {
     const boards = this.http.get<any>(this.apiBoard + 'getbyAccount/' + this.userId, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
-          return throwError('e');
+          if (error.status === 404) {
+            console.log('Theres no Boards :', this.userId);
+            return of(null); // Devuelve null si no se encuentran tarjetas
+        } else {
+            console.log('Error:', error.error.message);
+            alert(error.error.message);
+            return throwError('e');
+        }
         })
       )
         return boards
@@ -74,5 +84,159 @@ export class MainService {
         })
       )
         return board
+  }
+
+  async deleteBoard(id:number) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+     }
+    let lists:any
+    let cards:any
+
+    this.getCardsByListId(id).then((res) => {res.subscribe((data) => {cards = data})})
+    console.log('Deleted cards')
+    this.getListsByBoardId(id).then((res) => {res.subscribe((data) => {lists = data})}).then(() => {
+      console.log('Deleted lists')
+      this.deleteCardsandLists(cards, lists)
+      console.log('Deleted cards and lists')
+    })
+
+
+
+
+    let board = this.http.delete<any>(this.apiBoard + 'delete/' + id, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+
+        return board
+    }
+
+  async updateBoard(id: number, data:Board) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+    let board = this.http.put<any>(this.apiBoard + 'update' + id , data, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return board
+  }
+
+  async deleteList(id:number) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+    let board = this.http.delete<any>(this.apiList + 'deleteList' + id, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return board
+  }
+
+  async deleteCard(id:number) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+
+    let board = this.http.delete<any>(this.apiCard + 'deleteCard' + id, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return board
+  }
+
+
+
+  async getCardsByListId(id:number) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+
+    let board = this.http.get<any>(this.apiCard + 'getbylist/' + id, httpOptions)
+      .pipe(
+        catchError(error => {
+          if (error.status === 404) {
+            console.log('Not found cards in list id:', id);
+            return of(null); // Devuelve null si no se encuentran tarjetas
+        } else {
+            console.log('Error:', error.error.message);
+            alert(error.error.message);
+            return throwError('e');
+        }
+        })
+      )
+        return board
+  }
+
+  async getListsByBoardId(id:number) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+      }
+      let board = this.http.get<any>(this.apiList + 'getbyboardid/' + id, httpOptions)
+        .pipe(
+          catchError(error => {
+            if (error.status === 404) {
+              console.log('Not found Lists in Board id:', id);
+              return of(null); // Devuelve null si no se encuentran tarjetas
+          } else {
+              console.log('Error:', error.error.message);
+              alert(error.error.message);
+              return throwError('e');
+          }
+          })
+        )
+          return board
+      }
+
+  async deleteCardsandLists(cardsId:any[], listsId:any[]) {
+    if(listsId !== null && listsId !== undefined) {
+    listsId.forEach(async (id) => {
+      await this.deleteList(id)
+    }
+    )
+    }
+    if(cardsId !== null && cardsId !== undefined){
+      cardsId.forEach(async (id) => {
+        await this.deleteCard(id)
+      }
+      )
+    }
+
+
   }
 }
