@@ -19,6 +19,11 @@ export const homeGuard: CanActivateFn = async (route, state) => {
      } else {
          router.navigate(['login']);
          cookies.delete('token');
+         cookies.delete('user.email');
+         cookies.delete('user.name');
+         cookies.delete('user.id');
+         cookies.delete('user.type');
+         localStorage.removeItem('user');
          return false;
      }
  } else {

@@ -1,11 +1,13 @@
-<section class="max-h-screen h-[calc(100vh_-_48px)] dark:bg-sky-950  -z-10 flex  justify-center">
+<section class="max-h-screen h-[calc(100vh_-_48px)] dark:bg-sky-950  -z-10 flex flex-col ">
 <div class="h-[50px] bg-slate-800 w-full dark:bg-opacity-80 bg-opacity-50 p-2 px-5">
   <button *ngIf="!editing" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startEditing()">
-    <h3>{{ boardName }}</h3>
+    <h3>{{ boardName() }}</h3>
   </button>
 
-  <input *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()">
+  <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()">
+</div>
+<div class="w-screen h-[calc(100vh_-_102px) min-h-[calc(100vh_-_102px) h-full max-h-[calc(100vh_-_102px) overflow-hidden overflow-x-scroll my-2 scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar dark:scrollbar-track-transparent dark:scrollbar-thumb-slate-600  p-2">
 
 </div>
 </section>
-<!-- scrollbar dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-600 scrollbar-track-gray-200 scrollbar-thumb-gray-400 -->
+

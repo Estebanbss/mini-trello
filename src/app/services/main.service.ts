@@ -3,6 +3,7 @@ import { EventEmitter, Injectable, inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { catchError, of, throwError } from 'rxjs';
 import { Board } from '../interfaces/board';
+import { Console } from 'console';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,6 @@ export class MainService {
   private userEmail = this.cookies.get('user.email')
   private userName = this.cookies.get('user.name')
   private userType = this.cookies.get('user.type')
-  private userId = this.cookies.get('user.id')
   private apiAccount = '/api/Account/getbyemail/' + this.userEmail
   private apiBoard = '/api/Board/'
   private apiList = '/api/List/'
@@ -44,17 +44,20 @@ export class MainService {
   }
 
   async getBoards(){
+
+   const boards = await this.getUserId().then((res) => {
+
     const httpOptions ={
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
   }
-    const boards = this.http.get<any>(this.apiBoard + 'getbyAccount/' + this.userId, httpOptions)
+    const boards = this.http.get<any>(this.apiBoard + 'getbyAccount/' + res, httpOptions)
       .pipe(
         catchError(error => {
           if (error.status === 404) {
-            console.log('Theres no Boards :', this.userId);
+            console.log('Theres no Boards :', res);
             return of(null); // Devuelve null si no se encuentran tarjetas
         } else {
             console.log('Error:', error.error.message);
@@ -64,7 +67,9 @@ export class MainService {
         })
       )
         return boards
+    })
 
+    return boards
   }
 
   async createBoard(data:Board) {
@@ -120,13 +125,14 @@ export class MainService {
     }
 
   async updateBoard(id: number, data:Board) {
+
     const httpOptions ={
       headers: new HttpHeaders({
         'Content-Type': 'application / json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
     }
-    let board = this.http.put<any>(this.apiBoard + 'update' + id , data, httpOptions)
+    let board = this.http.put<any>(this.apiBoard + 'update/' + id , data, httpOptions)
       .pipe(
         catchError(error => {
           console.log(error.error.message);
@@ -136,6 +142,22 @@ export class MainService {
       )
         return board
   }
+
+  async getUserId() {
+    // Esperar a que se obtenga el ID del usuario
+    return new Promise((resolve, reject) => {
+        const id = this.cookies.get('user.id');
+        if (id) {
+            resolve(id);
+        } else {
+            this.getUserData().then((res) => {
+                res.subscribe((data) => {
+                    resolve(data.id);
+                });
+            });
+        }
+    });
+}
 
   async deleteList(id:number) {
     const httpOptions ={

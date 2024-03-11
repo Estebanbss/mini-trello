@@ -65,7 +65,8 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "mini-trello:build:production"
+              "buildTarget": "mini-trello:build:production",
+              "proxyConfig": "proxy.conf.json"
             },
             "development": {
               "buildTarget": "mini-trello:build:development"

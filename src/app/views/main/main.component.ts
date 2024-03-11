@@ -52,7 +52,7 @@ export default class MainComponent {
     name: ['', [Validators.required, Validators.minLength(4)]],
   });
 
-  this.getBoards()
+
   this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
       // Actualizar la ruta cuando se completa la navegación
@@ -60,6 +60,7 @@ export default class MainComponent {
     }
   });
   this.getRoute();
+
   }
 
   getRoute() {
@@ -80,6 +81,7 @@ export default class MainComponent {
 
   ngOnInit() {
     this.getRoute();
+    this.getBoards()
     // Suscripción al evento boardCreated para ejecutar getBoards() cuando se cree un nuevo tablero
     this.mainService.boardCreated.subscribe(() => {
       this.getBoards();

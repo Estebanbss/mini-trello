@@ -56,7 +56,7 @@
                   </div>
                   <span    *ngFor="let board of boards; let i = index " class="bg-white   relative dark:bg-slate-700 shadow-md rounded-xl p-4 min-h-[150px]">
                     <a [routerLink]="['/board',board.id, board.name]" (click)="getRoute();">
-                      <h3 class="font-bold dark:text-white">{{board.name}}</h3>
+                      <h3 class="font-bold dark:text-white line-clamp-1">{{board.name}}</h3>
                       <p class="dark:text-gray-400 text-gray-800">{{board.description}}</p>
                     </a>
 
@@ -90,7 +90,7 @@
                     <h3 class="dark:text-gray-400 text-sm text-gray-800 text-center">Create a new board</h3>
                     <form class="w-full" (ngSubmit)="submit()" [formGroup]="name!">
                       <p class="dark:text-gray-400 text-sm text-gray-800 mt-5">Board name</p>
-                      <input autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2" placeholder="Enter your email" formControlName="name" placeholder="" required>
+                      <input maxlength="50" autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2"  formControlName="name" placeholder="" required>
                       @if (name.get('name')?.hasError('required') && name.get('name')?.touched) {
                         <span class="text-center text-sm  font-semibold my-6 text-red-600 w-full">
                           <strong>☹️ Board title</strong> is required
@@ -128,7 +128,7 @@
                   <h3 class="dark:text-gray-400 text-sm text-gray-800 text-center">Create a new board</h3>
                   <form class="w-full" (ngSubmit)="submit()" [formGroup]="name!">
                     <p class="dark:text-gray-400 text-sm text-gray-800 mt-5">Board name</p>
-                    <input autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2" placeholder="Enter your email" formControlName="name" placeholder="" required>
+                    <input maxlength="50" autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2"  formControlName="name" placeholder="" required>
                     @if (name.get('name')?.hasError('required') && name.get('name')?.touched) {
                       <span class="text-center text-sm  font-semibold my-6 text-red-600 w-full">
                         <strong>☹️ Board title</strong> is required
@@ -172,7 +172,7 @@
                     <h3 class="dark:text-gray-400 text-sm text-gray-800 text-center">Create a new board</h3>
                     <form class="w-full" (ngSubmit)="submit()" [formGroup]="name!">
                       <p class="dark:text-gray-400 text-sm text-gray-800 mt-5">Board name</p>
-                      <input autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2" placeholder="Enter your email" formControlName="name" placeholder="" required>
+                      <input maxlength="50" autofocus autocapitalize="false" spellcheck="false" id="username"  type="username" class="w-full focus:bg-white focus:outline-indigo-700 h-10 border bg-gray-100 dark:bg-gray-600 dark:text-white p-2 my-2"  formControlName="name" placeholder="" required>
                       @if (name.get('name')?.hasError('required') && name.get('name')?.touched) {
                         <span class="text-center text-sm  font-semibold my-6 text-red-600 w-full">
                           <strong>☹️ Board title</strong> is required

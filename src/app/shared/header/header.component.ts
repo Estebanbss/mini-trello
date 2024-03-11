@@ -66,9 +66,10 @@ import { MainService } from '../../services/main.service';
         </div>
         <div class="flex dark:bg-white dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
             <button  class="w-[24px] h-[24px] rounded-full overflow-hidden">
-              @if (user.photo!==null || user.photo!==undefined){
+              @if(user){
+                @if (user.photo!==null && user.photo!==undefined){
                 <img [src]="user.photo" class="object cover">
-              }@else {
+              }@else{
                 <svg class="fill-purple-500" width="24" height="24" viewBox="0 0 24 24">
                 <defs>
                 </defs>
@@ -77,8 +78,9 @@ import { MainService } from '../../services/main.service';
                   {{user.username.charAt(0)}}
                 </text>
               </svg>
-
               }
+              }
+
             </button>
         </div>
 
@@ -102,9 +104,17 @@ export class HeaderComponent {
     this.themeService.getTheme();
     this.theme.set(this.themeService.getTheme());
     const value = localStorage.getItem('user');
-    if(value !== null){
+    if(value !== null && value !== undefined){
       const parse = JSON.parse(value);
       this.user = parse as unknown as User;
+    }else{
+      this.mainService.getUserData().then((res) => {
+        res.subscribe((data) => {
+          this.user = data;
+          localStorage.setItem('user', JSON.stringify(data));
+          this.cdr.markForCheck();
+        })
+      })
     }
     this.getBoards();
   }
