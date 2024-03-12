@@ -1,13 +1,29 @@
 <section class="max-h-screen h-[calc(100vh_-_48px)] dark:bg-sky-950  -z-10 flex flex-col ">
-<div class="h-[50px] bg-slate-800 w-full dark:bg-opacity-80 bg-opacity-50 p-2 px-5">
-  <button *ngIf="!editing" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startEditing()">
-    <h3>{{ boardName() }}</h3>
-  </button>
 
-  <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()">
-</div>
-<div class="w-screen h-[calc(100vh_-_102px) min-h-[calc(100vh_-_102px) h-full max-h-[calc(100vh_-_102px) overflow-hidden overflow-x-scroll my-2 scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar dark:scrollbar-track-transparent dark:scrollbar-thumb-slate-600  p-2">
+  <div class="h-[50px] bg-slate-800 w-full dark:bg-opacity-80 bg-opacity-50 p-2 px-5">
+    <button *ngIf="!editing" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startEditing()">
+      <h3>{{ boardName() }}</h3>
+    </button>
 
-</div>
+    <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()">
+  </div>
+
+  <div class="w-screen h-[calc(100vh_-_102px) min-h-[calc(100vh_-_102px) h-full max-h-[calc(100vh_-_102px) overflow-hidden overflow-x-scroll my-2 scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar dark:scrollbar-track-transparent dark:scrollbar-thumb-slate-600  p-2">
+    <div *ngIf="Lists.length !== 0" class="max-w-[300px] w-full h-full">
+      Ola
+    </div>
+    <div class="w-full h-full">
+      <button *ngIf="!creating" (click)="startCreating()" class="h-[44px] w-[272px] dark:bg-white dark:bg-opacity-30 bg-opacity-30 rounded-xl p-3 flex flex-row items-center font-semibold  text-white bg-black">
+        <span class="mr-2">
+          <svg width="16" height="16" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C11.4477 3 11 3.44772 11 4V11L4 11C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H11V20C11 20.5523 11.4477 21 12 21C12.5523 21 13 20.5523 13 20V13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11L13 11V4C13 3.44772 12.5523 3 12 3Z" fill="currentColor"></path></svg>
+        </span>
+        Add another list
+      </button>
+      <div (blur)="cancelCreating()"  *ngIf="creating"  class="h-[44px] w-[272px] dark:bg-[#101204] bg-slate-200 rounded-xl p-2 dark:text-gray-50">
+        <input maxlength="50" width="auto" class="p-1 px-3 font-bold w-full text-white bg-white rounded-sm  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listName" (keyup.enter)="updateBoardName()" (blur)="cancelCreating()" >
+      </div>
+    </div>
+  </div>
+
 </section>
 
