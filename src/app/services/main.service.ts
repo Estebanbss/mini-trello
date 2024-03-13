@@ -159,6 +159,43 @@ export class MainService {
     });
 }
 
+  async updateList(id: number, data:any) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+    let list = this.http.put<any>(this.apiList + 'update/' + id , data, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return list
+  }
+
+  async createList(data:any) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+    let list = this.http.post<any>(this.apiList + 'create' , data, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return list
+  }
+
+
   async deleteList(id:number) {
     const httpOptions ={
       headers: new HttpHeaders({
@@ -210,8 +247,7 @@ export class MainService {
       .pipe(
         catchError(error => {
           if (error.status === 404) {
-            console.log('Not found cards in list id:', id);
-            return of(null); // Devuelve null si no se encuentran tarjetas
+            return of([]); // Devuelve null si no se encuentran tarjetas
         } else {
             console.log('Error:', error.error.message);
             alert(error.error.message);

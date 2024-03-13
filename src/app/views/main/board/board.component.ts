@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Board } from '../../../interfaces/board';
 import { CookieService } from 'ngx-cookie-service';
 import { sign } from 'crypto';
+import { distinct, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-board',
@@ -28,6 +29,9 @@ export default class BoardComponent {
   boardName = signal('');
   newBoardName?: string;
   listName?: string;
+  listNameFor?: string;
+  updatingListNameB: boolean = false;
+  selectList:any;
   editing: boolean = false;
   creating: boolean = false;
   constructor() {
@@ -38,15 +42,43 @@ export default class BoardComponent {
 
 
   ngOnInit(): void {
+    this.getListsAndCards();
+      this.mainService.changeRoute
+      .pipe(
+        distinctUntilChanged(
+          (prev, curr) => {
+            return prev === curr
+          }
+        )
+      )
+      .subscribe(() => {
+        this.Aroute.params
+        .pipe(
+          distinctUntilChanged(
+            (prev, curr) => {
+              return prev['id'] === curr['id']
+            }
+          )
+        )
+        .subscribe(params => {
+          this.boardId.set(parseInt(params['id']));
+          this.boardName.set(params['boardName']);
+          this.getListsAndCards();
+        });
+      });
+  }
 
+
+  getListsAndCards(){
+    this.Lists = [];
     this.mainService.getListsByBoardId(this.boardId())
     .then(
+
       (res:any) =>
         {res.subscribe(
           (data:any) =>
           {
             this.Lists = data;
-            console.log('Lists: ',this.Lists);
             this.Lists.forEach((list:any) => {
               this.mainService.getCardsByListId(list.id)
               .then(
@@ -55,22 +87,16 @@ export default class BoardComponent {
                     (data:any) =>
                     {
                       list.cards = data;
-                      console.log('Cards: ',list.cards);
+
                     });
                   }
               )
             });
-
+            this.cdr.markForCheck();
           });
         }
-      )
 
-      this.mainService.changeRoute.subscribe(() => {
-        this.Aroute.params.subscribe(params => {
-          this.boardId.set(parseInt(params['id']));
-          this.boardName.set(params['boardName']);
-        });
-      });
+      )
   }
 
   updateBoardName() {
@@ -104,11 +130,66 @@ export default class BoardComponent {
     this.editing = false;
   }
 
+  createList(){
+    this.cancelCreating();
+    const data = {
+      name: this.listName,
+      boardId: this.boardId()
+    }
+
+    this.mainService.createList(data).then(
+      (res:any) =>
+        {res.subscribe(
+          (data:any) =>
+          {
+            console.log(this.Lists)
+            this.Lists.push(data);
+            this.cdr.markForCheck();
+            console.log(this.Lists)
+          });
+        }
+      )
+  }
+
+  updatingList(){
+    this.cancelUpdatingListName();
+    const data = {
+      id: this.selectList.id,
+      name: this.listNameFor,
+      boardId: this.selectList.boardId
+    }
+
+     this.mainService.updateList(this.selectList.id, data).then(
+       (res:any) =>
+          {res.subscribe(
+            (data:any) =>
+            {
+               this.selectList = null;
+               this.cdr.markForCheck();
+            });
+          }
+       )
+
+  }
+
   startCreating(){
     this.creating = true;
   }
 
   cancelCreating(){
     this.creating = false;
+  }
+
+  startUpdatingListName(list:any){
+    this.listNameFor = list.name;
+    this.selectList = list;
+    console.log(this.selectList);
+    this.updatingListNameB = true;
+  }
+
+  cancelUpdatingListName(){
+    console.log("ola")
+    this.selectList = null;
+    this.updatingListNameB = false;
   }
 }

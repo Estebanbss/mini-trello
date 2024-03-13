@@ -5,24 +5,37 @@
       <h3>{{ boardName() }}</h3>
     </button>
 
-    <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()">
+    <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditing()" autofocus onfocus="this.select()">
   </div>
 
-  <div class="w-screen h-[calc(100vh_-_102px) min-h-[calc(100vh_-_102px) h-full max-h-[calc(100vh_-_102px) overflow-hidden overflow-x-scroll my-2 scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar dark:scrollbar-track-transparent dark:scrollbar-thumb-slate-600  p-2">
-    <div *ngIf="Lists.length !== 0" class="max-w-[300px] w-full h-full">
-      Ola
-    </div>
-    <div class="w-full h-full">
-      <button *ngIf="!creating" (click)="startCreating()" class="h-[44px] w-[272px] dark:bg-white dark:bg-opacity-30 bg-opacity-30 rounded-xl p-3 flex flex-row items-center font-semibold  text-white bg-black">
-        <span class="mr-2">
-          <svg width="16" height="16" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C11.4477 3 11 3.44772 11 4V11L4 11C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H11V20C11 20.5523 11.4477 21 12 21C12.5523 21 13 20.5523 13 20V13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11L13 11V4C13 3.44772 12.5523 3 12 3Z" fill="currentColor"></path></svg>
-        </span>
-        Add another list
-      </button>
-      <div (blur)="cancelCreating()"  *ngIf="creating"  class="h-[44px] w-[272px] dark:bg-[#101204] bg-slate-200 rounded-xl p-2 dark:text-gray-50">
-        <input maxlength="50" width="auto" class="p-1 px-3 font-bold w-full text-white bg-white rounded-sm  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listName" (keyup.enter)="updateBoardName()" (blur)="cancelCreating()" >
+  <div class="w-screen h-[calc(100vh_-_102px) min-h-[calc(100vh_-_102px) h-full max-h-[calc(100vh_-_102px) overflow-hidden overflow-x-scroll my-2 scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar dark:scrollbar-track-transparent dark:scrollbar-thumb-slate-600  p-2 flex flex-row">
+    @if(Lists.length !== 0){
+    <div  *ngFor="let list of Lists"   class="max-w-[284px] min-w-[284px] w-full h-full mx-auto">
+      <div  class="w-[272px] min-w-[272px] max-w-[272px]  dark:bg-[#101204] bg-slate-200 rounded-xl p-2 dark:text-gray-50 mx-auto">
+        <input *ngIf="updatingListNameB && list.name === selectList.name" placeholder=""  maxlength="50" width="auto" class="p-1 px-3 font-bold w-full dark:text-white bg-white rounded-sm  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listNameFor" (keydown.esc)="cancelUpdatingListName()" (keyup.enter)="createList()" (blur)="cancelUpdatingListName()" autofocus onfocus="this.select()">
+        <button *ngIf="!updatingListNameB || list.name !== selectList.name" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startUpdatingListName(list)">
+          <h3>{{ list.name }}</h3>
+        </button>
+
       </div>
     </div>
+    }
+      <div class="w-full h-full mx-[6px] ">
+        <button *ngIf="!creating" (click)="startCreating()" class="min-h-[44px] min-w-[272px] max-w-[272px] dark:bg-white dark:bg-opacity-30 bg-opacity-30 rounded-xl p-3 flex flex-row items-center font-semibold  text-white bg-black">
+          <span class="mr-2">
+            <svg width="16" height="16" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C11.4477 3 11 3.44772 11 4V11L4 11C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H11V20C11 20.5523 11.4477 21 12 21C12.5523 21 13 20.5523 13 20V13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11L13 11V4C13 3.44772 12.5523 3 12 3Z" fill="currentColor"></path></svg>
+          </span>
+          Add another list
+        </button>
+        <div (blur)="cancelCreating()"  *ngIf="creating"  class="w-[272px] dark:bg-[#101204] bg-slate-200 rounded-xl p-2 dark:text-gray-50 ">
+          <input placeholder="Enter list title..." maxlength="50" width="auto" class="p-1 px-3 font-bold w-full dark:text-white bg-white rounded-sm  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listName" (keyup.enter)="createList()" (blur)="cancelCreating()" >
+          <div class="mt-2 flex flex-row gap-1">
+            <button (click)="createList()" class="w-[73px] h-[32px] p-[6px] px-[12px] text-sm rounded-sm bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black font-semibold text-white hover:bg-blue-700">Add list</button>
+            <button (click)="cancelCreating()" class="w-[32px] h-[32px] dark:hover:bg-white hover:bg-black hover:bg-opacity-15 rounded-sm dark:hover:bg-opacity-15 flex justify-center items-center"><svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12Z" fill="currentColor"></path></svg></button>
+          </div>
+        </div>
+      </div>
+
   </div>
 
 </section>
