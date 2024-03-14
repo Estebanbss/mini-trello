@@ -4,6 +4,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { catchError, of, throwError } from 'rxjs';
 import { Board } from '../interfaces/board';
 import { Console } from 'console';
+import { Card } from '../interfaces/cards';
 
 @Injectable({
   providedIn: 'root'
@@ -203,7 +204,20 @@ export class MainService {
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
     }
-    let board = this.http.delete<any>(this.apiList + 'deleteList' + id, httpOptions)
+
+
+    //en este punto se deberan obtener los ids de las cards relacionadas a la lista y eliminarlas
+    let cardsID: Card[] = []
+    this.getCardsByListId(id).then((res) => {res.subscribe((data) => {cardsID = data})}) //Obtiene las cards relacionadas a la lista
+
+    cardsID.forEach(card => {
+      console.log(card)
+      if(card.Id !== null && card.Id !== undefined){
+        this.deleteCard(card.Id).then((res) => {res.subscribe((data) => {console.log('Deleted card: ', data)})})
+      }
+    });
+
+    let list = this.http.delete<any>(this.apiList + 'delete/' + id, httpOptions)
       .pipe(
         catchError(error => {
           console.log(error.error.message);
@@ -211,7 +225,7 @@ export class MainService {
           return throwError('e');
         })
       )
-        return board
+        return list
   }
 
   async deleteCard(id:number) {
