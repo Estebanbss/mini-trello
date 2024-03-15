@@ -133,8 +133,6 @@ export class HeaderComponent {
       this.cdr.markForCheck();
     } );
 
-    this.mainService.changeRoute.emit()
-
 
   }
 

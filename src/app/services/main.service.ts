@@ -24,6 +24,21 @@ export class MainService {
   private apiList = '/api/List/'
   private apiCard = '/api/Card/'
 
+  async getUserId() {
+    // Esperar a que se obtenga el ID del usuario
+    return new Promise((resolve, reject) => {
+        const id = this.cookies.get('user.id');
+        if (id) {
+            resolve(id);
+        } else {
+            this.getUserData().then((res) => {
+                res.subscribe((data) => {
+                    resolve(data.id);
+                });
+            });
+        }
+    });
+}
 
   async getUserData() {
     const httpOptions ={
@@ -144,39 +159,7 @@ export class MainService {
         return board
   }
 
-  async getUserId() {
-    // Esperar a que se obtenga el ID del usuario
-    return new Promise((resolve, reject) => {
-        const id = this.cookies.get('user.id');
-        if (id) {
-            resolve(id);
-        } else {
-            this.getUserData().then((res) => {
-                res.subscribe((data) => {
-                    resolve(data.id);
-                });
-            });
-        }
-    });
-}
 
-  async updateList(id: number, data:any) {
-    const httpOptions ={
-      headers: new HttpHeaders({
-        'Content-Type': 'application / json',
-        'Authorization': 'Bearer ' + this.cookies.get('token')
-      })
-    }
-    let list = this.http.put<any>(this.apiList + 'update/' + id , data, httpOptions)
-      .pipe(
-        catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
-          return throwError('e');
-        })
-      )
-        return list
-  }
 
   async createList(data:any) {
     const httpOptions ={
@@ -197,6 +180,51 @@ export class MainService {
   }
 
 
+
+  async getListsByBoardId(id:number) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+      }
+      let board = this.http.get<any>(this.apiList + 'getbyboardid/' + id, httpOptions)
+        .pipe(
+          catchError(error => {
+            if (error.status === 404) {
+              console.log('Not found Lists in Board id:', id);
+              return of(null); // Devuelve null si no se encuentran tarjetas
+          } else {
+              console.log('Error:', error.error.message);
+              alert(error.error.message);
+              return throwError('e');
+          }
+          })
+        )
+          return board
+      }
+
+
+
+
+  async updateList(id: number, data:any) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application / json',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+    let list = this.http.put<any>(this.apiList + 'update/' + id , data, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return list
+  }
+
   async deleteList(id:number) {
     const httpOptions ={
       headers: new HttpHeaders({
@@ -204,8 +232,6 @@ export class MainService {
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
     }
-
-
     //en este punto se deberan obtener los ids de las cards relacionadas a la lista y eliminarlas
     let cardsID: Card[] = []
     this.getCardsByListId(id).then((res) => {res.subscribe((data) => {cardsID = data})}) //Obtiene las cards relacionadas a la lista
@@ -228,15 +254,14 @@ export class MainService {
         return list
   }
 
-  async deleteCard(id:number) {
+  async createCard(data:any) {
     const httpOptions ={
       headers: new HttpHeaders({
-        'Content-Type': 'application / json',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
     }
-
-    let board = this.http.delete<any>(this.apiCard + 'deleteCard' + id, httpOptions)
+    let card = this.http.post<any>(this.apiCard + 'create' , data, httpOptions)
       .pipe(
         catchError(error => {
           console.log(error.error.message);
@@ -244,10 +269,8 @@ export class MainService {
           return throwError('e');
         })
       )
-        return board
+        return card
   }
-
-
 
   async getCardsByListId(id:number) {
     const httpOptions ={
@@ -272,28 +295,47 @@ export class MainService {
         return board
   }
 
-  async getListsByBoardId(id:number) {
+  async updateCard(id: number, data:any) {
+    const httpOptions ={
+      headers: new HttpHeaders({
+        'Content-Type': 'application',
+        'Authorization': 'Bearer ' + this.cookies.get('token')
+      })
+    }
+
+    let card = this.http.put<any>(this.apiCard + 'update/' + id , data, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return card
+  }
+
+  async deleteCard(id:number) {
     const httpOptions ={
       headers: new HttpHeaders({
         'Content-Type': 'application / json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
-      }
-      let board = this.http.get<any>(this.apiList + 'getbyboardid/' + id, httpOptions)
-        .pipe(
-          catchError(error => {
-            if (error.status === 404) {
-              console.log('Not found Lists in Board id:', id);
-              return of(null); // Devuelve null si no se encuentran tarjetas
-          } else {
-              console.log('Error:', error.error.message);
-              alert(error.error.message);
-              return throwError('e');
-          }
-          })
-        )
-          return board
-      }
+    }
+
+    let board = this.http.delete<any>(this.apiCard + 'deleteCard' + id, httpOptions)
+      .pipe(
+        catchError(error => {
+          console.log(error.error.message);
+          alert(error.error.message);
+          return throwError('e');
+        })
+      )
+        return board
+  }
+
+
+
+
 
   async deleteCardsandLists(cardsId:any[], listsId:any[]) {
     if(listsId !== null && listsId !== undefined) {

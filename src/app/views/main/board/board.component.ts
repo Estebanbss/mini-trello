@@ -5,9 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Board } from '../../../interfaces/board';
 import { CookieService } from 'ngx-cookie-service';
-import { sign } from 'crypto';
-import { distinct, distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs';
 import { List } from '../../../interfaces/list';
+import { Card } from '../../../interfaces/cards';
 
 @Component({
   selector: 'app-board',
@@ -17,28 +17,55 @@ import { List } from '../../../interfaces/list';
     FormsModule
   ],
   templateUrl: './board.component.html',
+  styles: `
+  .placeholder-align-top::placeholder {
+  text-align: top;
+}
+
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class BoardComponent   {
-  mainService = inject(MainService);
-  Aroute = inject(ActivatedRoute);
-  cookies = inject(CookieService);
-  router = inject(Router);
-  cdr = inject(ChangeDetectorRef);
-  elRef = inject(ElementRef);
-  Lists:any = []
-  boardId = signal(-1)
-  boardName = signal('');
-  deleteButton = signal(false);
-  editButton = signal(false);
-  buttonEditChoose = signal(-1);
-  creating = signal(false);
-  newBoardName?: string;
-  listName?: string;
-  listNameFor?: string;
-  updatingListNameBoolean = signal(false);
-  selectList:any;
-  editing: boolean = false;
+
+// Servicios e inyecciones
+
+mainService = inject(MainService);
+Aroute = inject(ActivatedRoute);
+cookies = inject(CookieService);
+router = inject(Router);
+cdr = inject(ChangeDetectorRef);
+elRef = inject(ElementRef);
+
+// Variables relacionadas con el tablero (board)
+
+boardId = signal(-1);
+boardName = signal('');
+newBoardName?: string;
+editingBoardName: boolean = false;
+
+// Variables relacionadas con las listas (list)
+
+Lists: any = [];
+listName?: string;
+listNameFor?: string;
+selectList: any;
+creatingList = signal(false);
+updatingListNameBoolean = signal(false);
+deleteButtonList = signal(false);
+editButtonList = signal(false);
+buttonEditChooseList = signal(-1);
+
+// Variables relacionadas con las tarjetas (card)
+
+indexCard = signal(-1);
+creatingCardChoose = signal(-1);
+creatingCardBoolean = signal(false);
+editCardName = signal(false);
+updatingCardNameBoolean = signal(false);
+cardName?: string;
+cardNameFor?: string;
+selectCard: any;
+
   constructor() {
     this.boardId.set(parseInt(this.Aroute.snapshot.paramMap.get('id')!));
     this.boardName.set(this.Aroute.snapshot.paramMap.get('boardName')!);
@@ -47,6 +74,7 @@ export default class BoardComponent   {
 
 
   ngOnInit(): void {
+
     this.getListsAndCards();
     // Listener para cambiar de ruta
       this.mainService.changeRoute
@@ -77,7 +105,6 @@ export default class BoardComponent   {
 
 /// función para obtener listas y tarjetas
   getListsAndCards(){
-    this.Lists = [];
     this.mainService.getListsByBoardId(this.boardId())
     .then(
 
@@ -94,7 +121,9 @@ export default class BoardComponent   {
                     (data:any) =>
                     {
                       list.cards = data;
-
+                      this.cdr.detectChanges();
+                      this.cdr.markForCheck();
+                      console.log(this.Lists)
                     });
                   }
               )
@@ -132,13 +161,13 @@ export default class BoardComponent   {
  /// función de cambio de botón de editar nombre de Board
   startEditingBoardName() {
     this.newBoardName = this.boardName();
-    this.editing = true;
+    this.editingBoardName = true;
     this.cdr.detectChanges();
     this.selectText()
   }
 /// función de cambio de botón de editar nombre de Board a false
   cancelEditingBoardName() {
-    this.editing = false;
+    this.editingBoardName = false;
   }
 
 
@@ -160,6 +189,7 @@ export default class BoardComponent   {
           {
             this.Lists.push(data);
             this.cdr.markForCheck();
+            this.listName = '';
           });
         }
       )
@@ -201,13 +231,14 @@ export default class BoardComponent   {
 
 ///cambiar booleano de boton de crear lista
   startCreatingList(){
-    this.creating.set(true);
+    this.creatingList.set(true);
+    this.cdr.detectChanges();
+    this.selectText()
   }
 
 /// cambiar booleano de boton de crear lista a false
   cancelCreatingList(){
-    this.creating.set(false);
-    this.listName = '';
+    this.creatingList.set(false);
   }
 
 ///cambiar booleano de boton de editar nombre de lista
@@ -216,7 +247,7 @@ export default class BoardComponent   {
     this.selectList = list;
     this.updatingListNameBoolean.set(true);
     this.cdr.detectChanges();
-    this.buttonEditChoose.set(-1);
+    this.buttonEditChooseList.set(-1);
     this.selectText()
   }
 
@@ -240,13 +271,100 @@ export default class BoardComponent   {
       )
   }
 
+///*listas fin
+
+///!cards funciones
+
+///crear tarjeta
+createCard(list:any){
+console.log(list)
+
+const data:Card = {
+  Title : this.cardName,
+  Description : '',
+  Comment : '',
+  Labels : '',
+  Cover : '',
+  ListId : list.id,
+  Pos : list.cards.length,
+}
+
+console.log(data)
+this.mainService.createCard(data).then(
+  (res:any) =>
+    {res.subscribe(
+      (data:any) =>
+      {
+        list.cards.push(data);
+        this.cdr.detectChanges();
+        this.cdr.markForCheck();
+        this.cardName = '';
+      });
+    }
+  )
+}
+
+///eliminar tarjeta
+
+deleteCard(card:any){
+console.log(card)
+}
+
+///función bool para cambiar el botón de editar tarjeta
+
+startCreatingCard(card:any){
+console.log(card)
+this.creatingCardBoolean.set(true);
+}
+
+///función bool para cambiar el botón de editar tarjeta a false
+
+cancelCreatingCard(){
+this.creatingCardBoolean.set(false);
+this.creatingCardChoose.set(-1);
+}
+
+//función hover para activar el boton de editar en la card
+hoverEditCardName(){
+  this.editCardName.set(true);
+  this.cdr.detectChanges();
+}
+
+//función hover para desactivar el boton de editar en la card
+hoverEditCardNameOut(){
+  this.editCardName.set(false);
+  this.cdr.detectChanges();
+}
+
+//función para cambiar el bool de editar nombre de card
+startEditingCardName(card:any){
+  this.cardNameFor = card.Title;
+  this.selectCard = card;
+  this.updatingCardNameBoolean.set(true);
+  this.cdr.detectChanges();
 
 
+}
+
+
+// startUpdatingListName(list:any){
+//   this.listNameFor = list.name;
+//   this.selectList = list;
+//   this.updatingListNameBoolean.set(true);
+//   this.cdr.detectChanges();
+//   this.buttonEditChoose.set(-1);
+//   this.selectText()
+// }
+
+goCard(){
+  console.log('goCard')
+}
+
+//!funciones cards fin
   // Listener para cerrar los botones de editar y eliminar
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
-    console.log(event.target)
     const dontElements = document.querySelectorAll('.dont');
     const buttons = document.querySelectorAll('button');
 
@@ -254,24 +372,24 @@ export default class BoardComponent   {
 
     dontElements.forEach(element => {
       if (element.contains(event.target as Node)) {
-        console.log('clicked inside')
         clickedInside = true;
+
       }
     });
 
     buttons.forEach(button => {
       if (button.contains(event.target as Node)) {
-        console.log('clicked inside')
         clickedInside = true;
+
       }
     });
 
     if (!clickedInside) {
-      console.log('clicked outside')
-      this.buttonEditChoose.set(-1);
-      this.deleteButton.set(false);
-      this.editButton.set(false);
-
+      this.buttonEditChooseList.set(-1);
+      this.deleteButtonList.set(false);
+      this.editButtonList.set(false);
+      this.cancelCreatingList();
+      this.cancelCreatingCard();
     }
   }
 

@@ -1,34 +1,35 @@
 <section class="max-h-screen h-[calc(100vh_-_48px)] dark:bg-sky-950  -z-10 flex flex-col ">
 
   <div class="h-[50px] bg-slate-800 w-full dark:bg-opacity-80 bg-opacity-50 p-2 px-5">
-    <button *ngIf="!editing" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startEditingBoardName()">
+    <button *ngIf="!editingBoardName" class="p-1 px-3 font-bold text-white bg-white rounded-sm bg-opacity-0 hover:bg-opacity-35" (click)="startEditingBoardName()">
       <h3>{{ boardName() }}</h3>
     </button>
 
-    <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editing" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditingBoardName()" autofocus onfocus="this.select()">
+    <input maxlength="50" width="auto" class="p-1 px-3 font-bold text-white bg-white rounded-sm w-min bg-opacity-0 hover:bg-opacity-35 " *ngIf="editingBoardName" type="text" [(ngModel)]="newBoardName" (keyup.enter)="updateBoardName()" (blur)="cancelEditingBoardName()" autofocus onfocus="this.select()">
   </div>
 
   <div class="w-screen h-[calc(100vh_-_102px) min-h-[calc(100vh_-_102px) h-full max-h-[calc(100vh_-_102px) overflow-hidden overflow-x-scroll my-2 scrollbar-track-transparent scrollbar-thumb-gray-400 scrollbar dark:scrollbar-track-transparent dark:scrollbar-thumb-slate-600  p-2 flex flex-row">
     @if(Lists.length !== 0){
     <div  *ngFor="let list of Lists; let i = index"   class="max-w-[284px] text-sm min-w-[284px] w-full h-full mx-auto">
-      <div  class="w-[272px] min-w-[272px] max-w-[272px]  dark:bg-[#101204] bg-slate-200 rounded-xl p-2 dark:text-gray-50 mx-auto">
+      <div  class="w-[272px] min-w-[272px] max-w-[272px]  dark:bg-[#101204] bg-gray-100 shadow-md rounded-xl p-2 dark:text-gray-50 mx-auto">
         <div class="max-h-[40px] flex flex-row flex-grow">
-          <input *ngIf="updatingListNameBoolean() === true && list?.id === selectList?.id" placeholder=""  maxlength="50" class="p-1 px-3 font-bold   dark:text-white w-full max-w-[224px] bg-white rounded-lg  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listNameFor" (keydown.esc)="cancelUpdatingListName()" (keyup.enter)="updatingListName()" (blur)="cancelUpdatingListName()" autofocus>
-          <button *ngIf="!updatingListNameBoolean() || list?.id !== selectList?.id" class="p-1 px-3  font-bold dark:text-white w-full max-w-[224px] w-full text-left bg-white rounded-lg bg-opacity-0 hover:bg-opacity-35" (click)="startUpdatingListName(list)">
+          <input onfocus="select()" *ngIf="updatingListNameBoolean() === true && list?.id === selectList?.id" placeholder=""  maxlength="50" class="p-1 px-3 font-bold   dark:text-white w-full max-w-[224px] bg-white rounded-lg  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listNameFor" (keydown.esc)="cancelUpdatingListName()" (keyup.enter)="updatingListName()" (blur)="cancelUpdatingListName()" autofocus>
+          <button *ngIf="!updatingListNameBoolean() || list?.id !== selectList?.id" class="p-1 px-3  font-bold dark:text-white w-full max-w-[224px]  text-left bg-white rounded-lg bg-opacity-0 hover:bg-opacity-35" (click)="startUpdatingListName(list)">
             <h3>{{ list?.name }}</h3>
           </button>
-          <button (click)="buttonEditChoose() == i ? buttonEditChoose.set(-1) : buttonEditChoose.set(i)" class="min-w-[32px] min-h-[32px] relative rounded-lg dark:fill-gray-400 fill-gray-800 hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15">
+
+          <button (click)="buttonEditChooseList() == i ? buttonEditChooseList.set(-1) : buttonEditChooseList.set(i)" class="min-w-[32px] min-h-[32px] relative rounded-lg dark:fill-gray-400 fill-gray-800 hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15">
             <span class="mx-auto">
               <svg class="mx-auto" width="16" height="16" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M5 14C6.10457 14 7 13.1046 7 12C7 10.8954 6.10457 10 5 10C3.89543 10 3 10.8954 3 12C3 13.1046 3.89543 14 5 14ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14ZM21 12C21 13.1046 20.1046 14 19 14C17.8954 14 17 13.1046 17 12C17 10.8954 17.8954 10 19 10C20.1046 10 21 10.8954 21 12Z" fill="currentColor"></path></svg>
             </span>
-            <div *ngIf="buttonEditChoose() == i"
+            <div *ngIf="buttonEditChooseList() == i"
             class="absolute dont -bottom-30 -right-8 dark:bg-slate-600  rounded-sm z-40 bg-white shadow-md h-[130px] w-[40px] flex flex-col justify-center ease-in-out transition-opacity duration-1000 p-1" >
 
               <div class="dont flex flex-col gap-4">
-                <button (click)="editButton.set(true); $event.stopPropagation(); startUpdatingListName(list)" class="dont p-1 rounded-sm button flex justify-center hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15">
+                <button (click)="editButtonList.set(true); $event.stopPropagation(); startUpdatingListName(list)" class="dont p-1 rounded-sm button flex justify-center hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15">
                   <svg class="pointer-events-none dont" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
                 </button>
-                <button (click)="deleteButton.set(true); $event.stopPropagation(); deleteList(list)" class="dont p-1 rounded-sm button flex justify-center hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15">
+                <button (click)="deleteButtonList.set(true); $event.stopPropagation(); deleteList(list)" class="dont p-1 rounded-sm button flex justify-center hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15">
                   <svg  class="pointer-events-none dont" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
                 </button>
               </div>
@@ -37,22 +38,53 @@
             </div>
           </button>
         </div>
+        <!--!CARDS-->
+        <div class="w-full h-full  mt-2 ">
+          @if(list?.cards?.length !== 0){
+            <div *ngFor="let card of list.cards; let i = index" (mouseenter)="hoverEditCardName(); indexCard.set(i)" (mouseleave)="hoverEditCardNameOut(); indexCard.set(-1)" class="min-h-[36px] relative my-2 max-h-[36px] dont min-w-[256px] max-w-[256px] dark:bg-white dark:bg-opacity-10  rounded-md p-3 flex flex-row items-center font-semibold  text-black shadow-sm bg-white text-sm hover:ring-2">
 
+            <input onfocus="select()" *ngIf="updatingListNameBoolean() === true && list?.id === selectList?.id" placeholder=""  maxlength="50" class="p-1 px-3 font-bold   dark:text-white w-full max-w-[224px] bg-white rounded-lg  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listNameFor" (keydown.esc)="cancelUpdatingListName()" (keyup.enter)="updatingListName()" (blur)="cancelUpdatingListName()" autofocus>
+
+            <button (click)="goCard()" class="w-full max-w-[224px] h-full text-left dark:text-gray-300 ">
+              <h3>{{ card.title }}</h3>
+            </button>
+
+            <button  *ngIf="editCardName() && i === indexCard()" class="w-[32px] h-[32px] absolute right-0 dark:fill-gray-300 rounded-full dark:text-gray-300 hover:dark:bg-white hover:dark:bg-opacity-5 hover:bg-black hover:bg-opacity-5">
+              <svg class="pointer-events-none dont mx-auto" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d= "M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+            </button>
+
+            </div>
+          }
+          <button *ngIf="!creatingCardBoolean() || i !== creatingCardChoose()" (click)="startCreatingCard(list.cards); $event.stopPropagation(); creatingCardChoose.set(i)" class="min-h-[36px] max-h-[36px] dont min-w-[256px] max-w-[256px] dark:hover:bg-white dark:hover:bg-opacity-30 hover:bg-opacity-30 rounded-md p-3 flex flex-row items-center font-semibold dark:text-white text-gray-600  hover:bg-black text-sm">
+            <span class="mr-2 dont">
+              <svg class="dont" width="16" height="16" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C11.4477 3 11 3.44772 11 4V11L4 11C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H11V20C11 20.5523 11.4477 21 12 21C12.5523 21 13 20.5523 13 20V13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11L13 11V4C13 3.44772 12.5523 3 12 3Z" fill="currentColor"></path></svg>
+            </span>
+            Add a card
+          </button>
+          <div  *ngIf="creatingCardChoose() === i"  class="dont min-w-[256px] max-w-[256px] dont dark:bg-[#101204] bg-gray-100 rounded-xl  dark:text-gray-50 ">
+            <input onfocus="select()"  placeholder="Enter card title..." maxlength="50" width="auto" class="p-1 px-3 font-bold w-full dark:bg-gray-800 min-h-[56px]  dark:text-white bg-white    placeholder-align-top rounded-lg border-2 dark:border-gray-500 " type="text" [(ngModel)]="cardName" (keyup.enter)="createCard(list)" (keydown.esc)="cancelCreatingCard()"  autofocus>
+            <div class="mt-2 flex flex-row gap-1 ">
+              <button [disabled]="cardName === null || cardName == '' || cardName == undefined" (click)="createCard(list); $event.stopPropagation();" [ngClass]="[ cardName === null || cardName == '' || cardName == undefined ? 'w-[90px] h-[32px] p-[6px] px-[12px] text-sm rounded-sm bg-blue-700 dark:bg-blue-600  dark:text-black font-semibold text-white ' :'w-[90px] h-[32px] p-[6px] px-[12px] text-sm rounded-sm bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black font-semibold text-white hover:bg-blue-700']">Add card</button>
+              <button (click)="cancelCreatingCard(); $event.stopPropagation();" class="w-[32px] h-[32px] dark:hover:bg-white hover:bg-black hover:bg-opacity-15 rounded-sm dark:hover:bg-opacity-15 flex justify-center items-center"><svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12Z" fill="currentColor"></path></svg></button>
+            </div>
+          </div>
+        </div>
+    <!--!CARDS-->
       </div>
     </div>
     }
       <div class="w-full h-full mx-[6px]  ">
-        <button *ngIf="creating() === false" (click)="startCreatingList()" class="min-h-[44px] dont min-w-[272px] max-w-[272px] dark:bg-white dark:bg-opacity-30 bg-opacity-30 rounded-xl p-3 flex flex-row items-center font-semibold  text-white bg-black text-sm">
+        <button *ngIf="creatingList() === false" (click)="startCreatingList(); $event.stopPropagation();" class="min-h-[44px] dont min-w-[272px] max-w-[272px] dark:bg-white dark:bg-opacity-30 bg-opacity-30 rounded-xl p-3 flex flex-row items-center font-semibold  text-white bg-black text-sm">
           <span class="mr-2 dont">
             <svg class="dont" width="16" height="16" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C11.4477 3 11 3.44772 11 4V11L4 11C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13H11V20C11 20.5523 11.4477 21 12 21C12.5523 21 13 20.5523 13 20V13H20C20.5523 13 21 12.5523 21 12C21 11.4477 20.5523 11 20 11L13 11V4C13 3.44772 12.5523 3 12 3Z" fill="currentColor"></path></svg>
           </span>
           Add another list
         </button>
-        <div (blur)="cancelCreatingList()"   *ngIf="creating()"  class="w-[272px] dont dark:bg-[#101204] bg-slate-200 rounded-xl p-2 dark:text-gray-50 ">
-          <input placeholder="Enter list title..." maxlength="50" width="auto" class="p-1 px-3 font-bold w-full dark:text-white bg-white rounded-sm  bg-opacity-0 hover:bg-opacity-35 " type="text" [(ngModel)]="listName" (keyup.enter)="createList()" (keydown.esc)="cancelCreatingList()" (blur)="cancelCreatingList()" >
-          <div class="mt-2 flex flex-row gap-1">
-            <button (click)="createList()" class="w-[73px] h-[32px] p-[6px] px-[12px] text-sm rounded-sm bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black font-semibold text-white hover:bg-blue-700">Add list</button>
-            <button (click)="cancelCreatingList()" class="w-[32px] h-[32px] dark:hover:bg-white hover:bg-black hover:bg-opacity-15 rounded-sm dark:hover:bg-opacity-15 flex justify-center items-center"><svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12Z" fill="currentColor"></path></svg></button>
+        <div  *ngIf="creatingList()"  class="w-[272px] dont dark:bg-[#101204] bg-gray-100 rounded-xl p-2 dark:text-gray-50 ">
+          <input onfocus="select()" placeholder="Enter list title..." maxlength="50" width="auto" class="p-1 px-3 font-bold w-full dark:text-white  bg-white dark:bg-gray-800 rounded-sm border-2 dark:border-gray-500  " type="text" [(ngModel)]="listName" (keyup.enter)="createList()" (keydown.esc)="cancelCreatingList()"  autofocus>
+          <div class="mt-2 flex flex-row gap-1 ">
+            <button [disabled]="listName === null || listName == '' || listName == undefined" (click)="createList(); $event.stopPropagation();" [ngClass]="[ listName === null || listName == '' || listName == undefined ? 'w-[73px] h-[32px] p-[6px] px-[12px] text-sm rounded-sm bg-blue-700 dark:bg-blue-600  dark:text-black font-semibold text-white ' :'w-[73px] h-[32px] p-[6px] px-[12px] text-sm rounded-sm bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-black font-semibold text-white hover:bg-blue-700']">Add list</button>
+            <button (click)="cancelCreatingList(); $event.stopPropagation();" class="w-[32px] h-[32px] dark:hover:bg-white hover:bg-black hover:bg-opacity-15 rounded-sm dark:hover:bg-opacity-15 flex justify-center items-center"><svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12Z" fill="currentColor"></path></svg></button>
           </div>
         </div>
       </div>
