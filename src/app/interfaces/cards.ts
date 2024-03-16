@@ -5,7 +5,6 @@ export interface Card {
   Comment?: string;
   Labels?: string;
   Cover?: string;
-  Date?: string;
   ListId?: number;
   Pos?: number;
 }

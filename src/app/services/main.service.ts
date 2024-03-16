@@ -298,7 +298,7 @@ export class MainService {
   async updateCard(id: number, data:any) {
     const httpOptions ={
       headers: new HttpHeaders({
-        'Content-Type': 'application',
+        'Content-Type': 'application / json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
     }
@@ -306,8 +306,8 @@ export class MainService {
     let card = this.http.put<any>(this.apiCard + 'update/' + id , data, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          console.log(error.error);
+          alert(error.error);
           return throwError('e');
         })
       )
@@ -322,7 +322,7 @@ export class MainService {
       })
     }
 
-    let board = this.http.delete<any>(this.apiCard + 'deleteCard' + id, httpOptions)
+    let board = this.http.delete<any>(this.apiCard + 'delete/' + id, httpOptions)
       .pipe(
         catchError(error => {
           console.log(error.error.message);

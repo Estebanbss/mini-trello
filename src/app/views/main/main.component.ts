@@ -147,36 +147,35 @@ export default class MainComponent {
     this.getUserData()
   }
 
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: Event) {
-    const dontElements = document.querySelectorAll('.dont'); // Selecciona todos los elementos con la clase 'dont'
-    const buttons = document.querySelectorAll('button'); // Selecciona todos los botones
+  cdrDm(){
+    this.editButton.set(false);
+    this.buttonedit.set(-1);
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
 
-    let clickedInside = false;
 
-    dontElements.forEach(element => {
-        if (element.contains(event.target as Node)) {
+@HostListener('document:click', ['$event'])
+onClickOutside(event: Event) {
+  if (!this.isButtonElement(event.target) && event.target !== document.getElementsByClassName('dont')[0] && !this.isInputElement(event.target)) {
+  // Lógica para clics fuera de los botones y elementos con la clase "dont" que no tienen la clase "si".
+  this.buttonCreateBoard.set(false);
+  this.buttonCreateBoard2.set(false);
+  this.buttonedit.set(-1);
+  this.deleteButton.set(false);
+  this.editButton.set(false);
+  this.cdr.detectChanges();
+  }
 
-            clickedInside = true;
-        }
-    });
-
-    buttons.forEach(button => {
-        if (button.contains(event.target as Node)) {
-
-            clickedInside = true;
-        }
-    });
-
-    if (!clickedInside) {
-
-        this.buttonCreateBoard.set(false);
-        this.buttonCreateBoard2.set(false);
-        this.buttonedit.set(-1);
-        this.deleteButton.set(false);
-        this.editButton.set(false);
-    }
 }
 
+// Método para verificar si un elemento es un elemento de entrada (input)
+private isInputElement(target: EventTarget | null): boolean {
+  return target instanceof HTMLInputElement;
+}
+
+private isButtonElement(target: EventTarget | null): boolean {
+  return target instanceof HTMLButtonElement;
+}
 
 }

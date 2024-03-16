@@ -36,7 +36,7 @@ import { MainService } from '../../services/main.service';
           </a>
         </div>
         <div class="relative mr-auto">
-          <button id="Button" (click)="boardsS.set(!boardsS())" [ngClass]="[boardsS() ? 'flex hover:dark:bg-blue-900  p-1 px-3 gap-1 rounded-sm  flex-row items-center font-semibold hover:bg-opacity-30 hover:bg-blue-500 dark:font-semibold fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800' : 'flex p-1 px-3 gap-1 rounded-sm flex-row items-center dark:font-semibold font-semibold dark:fill-white dark:text-white hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15']"  >
+          <button id="Button" (click)="boardsS.set(!boardsS())" [ngClass]="[boardsS() ? 'flex hover:dark:bg-blue-900  p-1 px-3 gap-1 rounded-sm  flex-row items-center button font-semibold hover:bg-opacity-30 hover:bg-blue-500 dark:font-semibold fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800' : 'flex p-1 px-3 gap-1 rounded-sm flex-row items-center dark:font-semibold font-semibold dark:fill-white dark:text-white hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15']"  >
           Boards
           <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
         </button>
@@ -175,25 +175,11 @@ export class HeaderComponent {
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
-    const dontElements = document.querySelectorAll('.dont'); // Selecciona todos los elementos con la clase 'dont'
-    const buttons = document.querySelectorAll('button'); // Selecciona todos los botones
-
-    let clickedInside = false;
-
-    dontElements.forEach(element => {
-        if (element.contains(event.target as Node)) {
-            clickedInside = true;
-        }
-    });
-
-    buttons.forEach(button => {
-        if (button.contains(event.target as Node)) {
-            clickedInside = true;
-        }
-    });
-
-    if (!clickedInside) {
-        this.boardsS.set(false);
+    if (!this.isButtonElement(event.target) && event.target !== document.getElementsByClassName('dont')[0]) {
+      this.boardsS.set(false);
     }
+}
+private isButtonElement(target: EventTarget | null): boolean {
+  return target instanceof HTMLButtonElement;
 }
 }

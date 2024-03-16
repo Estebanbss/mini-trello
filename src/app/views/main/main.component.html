@@ -49,7 +49,7 @@
                     <div class="flex flex-col justify-center items-center h-full">
                       <h3 class="dark:text-gray-400 text-gray-800 text-center">Are you sure you want to delete this board?</h3>
                       <div class="flex flex-row gap-4 mt-5">
-                        <button (click)="deleteButton.set(false)" class="w-[100px] h-[36px] bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-semibold rounded-sm">Cancel</button>
+                        <button (click)="deleteButton.set(false);  cdrDm()" class="w-[100px] h-[36px] bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white font-semibold rounded-sm">Cancel</button>
                         <button (click)="deleteButton.set(false); deleteBoard(selectBoard())" class="w-[100px] h-[36px] bg-red-500 text-white font-semibold rounded-sm">Delete</button>
                       </div>
                     </div>
@@ -60,7 +60,7 @@
                       <p class="dark:text-gray-400 text-gray-800">{{board.description}}</p>
                     </a>
 
-                    <button (click)="buttonedit() == i ? buttonedit.set(-1) : buttonedit.set(i)" class="absolute right-1 bottom-2 dark:fill-gray-400 fill-gray-800"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
+                    <button (click)="buttonedit() == i ? buttonedit.set(-1) : buttonedit.set(i)" class="absolute right-1 bottom-2 dark:fill-gray-400 fill-gray-800"><svg class="pointer-events-none" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
 
                       <div *ngIf="buttonedit() == i"
                       class="absolute dont bottom-0 -right-8 dark:bg-slate-600  rounded-sm z-40 bg-white shadow-md h-[100px] w-[30px] flex flex-col justify-center ease-in-out transition-opacity duration-1000" >
