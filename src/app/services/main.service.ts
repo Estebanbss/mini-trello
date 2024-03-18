@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventEmitter, Injectable, inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { catchError, of, throwError } from 'rxjs';
+import { catchError, last, lastValueFrom, of, throwError } from 'rxjs';
 import { Board } from '../interfaces/board';
 import { Console } from 'console';
 import { Card } from '../interfaces/cards';
@@ -107,38 +107,44 @@ export class MainService {
         return board
   }
 
-  async deleteBoard(id:number) {
-    const httpOptions ={
+  async deleteBoard(id: number) {
+
+    const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application / json',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
-     }
-    let lists:any
-    let cards:any
+    };
 
-    this.getCardsByListId(id).then((res) => {res.subscribe((data) => {cards = data})})
-    console.log('Deleted cards')
-    this.getListsByBoardId(id).then((res) => {res.subscribe((data) => {lists = data})}).then(() => {
-      console.log('Deleted lists')
-      this.deleteCardsandLists(cards, lists)
-      console.log('Deleted cards and lists')
-    })
+    let lists: any;
+    let board: any;
 
+    console.log('Deleted cards');
 
+    try {
+      // Eliminar listas
+      const listsResponse = await lastValueFrom(await this.getListsByBoardId(id));
+      lists = await listsResponse;
 
+      if (lists !== null && lists !== undefined) {
+        await Promise.all(lists.map(async (list: any) => {
+          await this.deleteList(list.id);
+        }));
+      }
 
-    let board = this.http.delete<any>(this.apiBoard + 'delete/' + id, httpOptions)
-      .pipe(
-        catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
-          return throwError('e');
-        })
-      )
+      // Eliminar la tabla
+      board = await lastValueFrom(this.http.delete<any>(this.apiBoard + 'delete/' + id, httpOptions));
 
-        return board
+      if (board !== null && board !== undefined) {
+        return board;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Manejar el error adecuadamente según tu caso de uso
+      throw error;
     }
+  }
+
 
   async updateBoard(id: number, data:Board) {
 
@@ -207,52 +213,53 @@ export class MainService {
 
 
 
-  async updateList(id: number, data:any) {
-    const httpOptions ={
+  async updateList(id: number, data: any) {
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json', // Elimina el espacio adicional
+            'Authorization': 'Bearer ' + this.cookies.get('token')
+          })
+        };
+
+        try {
+          const response = await lastValueFrom(this.http.put<any>(this.apiList + 'update/' + id, data, httpOptions))
+          return response;
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+    }
+
+
+  async deleteList(id: number) {
+    const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application / json',
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + this.cookies.get('token')
       })
+    };
+
+    try {
+      // Obtiene las cards relacionadas a la lista
+      const cards: Card[] = await lastValueFrom(await this.getCardsByListId(id));
+
+      // Elimina las tarjetas en paralelo
+      await Promise.all(cards.map(async card => {
+        if (card.id) {
+          await lastValueFrom(await this.deleteCard(card.id));
+        }
+      }));
+
+      // Elimina la lista
+      const response = await lastValueFrom(this.http.delete<any>(this.apiList + 'delete/' + id, httpOptions));
+      return response;
+    } catch (error) {
+      console.error(error);
+      alert(error); // Considera usar un mecanismo de notificación más sofisticado
+      throw error; // Lanza el error nuevamente para que pueda ser manejado en un nivel superior
     }
-    let list = this.http.put<any>(this.apiList + 'update/' + id , data, httpOptions)
-      .pipe(
-        catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
-          return throwError('e');
-        })
-      )
-        return list
-  }
+}
 
-  async deleteList(id:number) {
-    const httpOptions ={
-      headers: new HttpHeaders({
-        'Content-Type': 'application / json',
-        'Authorization': 'Bearer ' + this.cookies.get('token')
-      })
-    }
-    //en este punto se deberan obtener los ids de las cards relacionadas a la lista y eliminarlas
-    let cardsID: Card[] = []
-    this.getCardsByListId(id).then((res) => {res.subscribe((data) => {cardsID = data})}) //Obtiene las cards relacionadas a la lista
-
-    cardsID.forEach(card => {
-      console.log(card)
-      if(card.Id !== null && card.Id !== undefined){
-        this.deleteCard(card.Id).then((res) => {res.subscribe((data) => {console.log('Deleted card: ', data)})})
-      }
-    });
-
-    let list = this.http.delete<any>(this.apiList + 'delete/' + id, httpOptions)
-      .pipe(
-        catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
-          return throwError('e');
-        })
-      )
-        return list
-  }
 
   async createCard(data:any) {
     const httpOptions ={
@@ -322,7 +329,7 @@ export class MainService {
       })
     }
 
-    let board = this.http.delete<any>(this.apiCard + 'delete/' + id, httpOptions)
+    let card = this.http.delete<any>(this.apiCard + 'delete/' + id, httpOptions)
       .pipe(
         catchError(error => {
           console.log(error.error.message);
@@ -330,7 +337,7 @@ export class MainService {
           return throwError('e');
         })
       )
-        return board
+        return card
   }
 
 

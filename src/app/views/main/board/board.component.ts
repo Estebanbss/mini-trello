@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild, inject, signal } from '@angular/core';
 import { MainService } from '../../../services/main.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -67,13 +67,15 @@ editCardName = signal(false);
 updatingCardNameBoolean = signal(false);
 buttonEditChooseCard = signal(-1);
 
+// variables para el drag and drop
+draggingList = signal(false);
+isFirstDragOver = signal(false)
+listId:any;
 
   constructor() {
     this.boardId.set(parseInt(this.Aroute.snapshot.paramMap.get('id')!));
     this.boardName.set(this.Aroute.snapshot.paramMap.get('boardName')!);
   }
-
-
 
   ngOnInit(): void {
 
@@ -109,9 +111,12 @@ buttonEditChooseCard = signal(-1);
   }
 
   selectText() {
+    this.cdr.detectChanges();
+    // Buscar el elemento input dentro del elemento nativo del componente
     const inputElement = this.elRef.nativeElement.querySelector('input');
+
     if (inputElement) {
-      inputElement.select()
+      inputElement.select();
     }
   }
 
@@ -155,6 +160,11 @@ buttonEditChooseCard = signal(-1);
       name: this.newBoardName!,
       accountId: parseInt(this.cookies.get('user.id'))
     }
+
+    if(this.newBoardName === '' || this.newBoardName === undefined){
+      return;
+    }
+
     this.mainService.updateBoard(this.boardId(), data)
     .then(
       (res:any) =>
@@ -192,11 +202,14 @@ buttonEditChooseCard = signal(-1);
 
 ///crear lista
   createList(){
-    this.cancelCreatingList();
     const data = {
       name: this.listName,
       boardId: this.boardId(),
       pos: this.Lists.length
+    }
+
+    if(this.listName === '' || this.listName === undefined){
+      return;
     }
 
     this.mainService.createList(data).then(
@@ -225,6 +238,9 @@ buttonEditChooseCard = signal(-1);
         return;
     }
 
+    if (this.listNameFor === '' || this.listNameFor === undefined) {
+        return;
+    }
     // Actualiza el nombre en la lista local
     this.Lists[updatedListIndex].name = this.listNameFor;
 
@@ -236,14 +252,22 @@ buttonEditChooseCard = signal(-1);
 
     this.mainService.updateList(this.selectList.id, data).then(
         (res: any) => {
-            res.subscribe(
-                (data: any) => {
-                    this.cdr.markForCheck();
-                });
+          this.cdr.markForCheck();
         }
     ).then(() => {
         this.selectList = null;
     });
+}
+
+  updatingList(list:any) {
+  this.mainService.updateList(list.id, list).then(
+    (res:any) =>
+      {
+          this.cdr.detectChanges();
+          this.cdr.markForCheck();
+
+      }
+  )
 }
 
 ///cambiar booleano de boton de crear lista
@@ -289,12 +313,10 @@ buttonEditChooseCard = signal(-1);
   deleteList(list:any){
     this.mainService.deleteList(list.id).then(
       (res:any) =>
-        {res.subscribe(
-          (data:any) =>
-          {
+        {
             this.Lists = this.Lists.filter((item:any) => item.id !== list.id);
             this.cdr.markForCheck();
-          });
+
         }
       )
   }
@@ -308,13 +330,17 @@ createCard(list:any){
 
 this.cancelCreatingCard();
 const data:Card = {
-  Title : this.cardName,
-  Description : '',
-  Comment : '',
-  Labels : '',
-  Cover : '',
-  ListId : list.id,
-  Pos : list.cards.length,
+  title : this.cardName,
+  description : '',
+  comment : '',
+  labels : '',
+  cover : '',
+  listId : list.id,
+  pos : list.cards.length,
+}
+
+if(this.cardName === '' || this.cardName === undefined){
+  return;
 }
 
 this.mainService.createCard(data).then(
@@ -351,14 +377,16 @@ deleteCard(card:any){
 
 ///función bool para cambiar el botón de editar tarjeta
 
-startCreatingCard(){
+startCreatingCard(i:any){
 this.creatingCardBoolean.set(true);
+this.creatingCardChoose.set(i);
 this.cancelEditingBoardName()
 this.cancelCreatingList()
 this.cancelEditingListName()
 this.cancelEditingCardName()
 this.cdr.detectChanges();
 this.cdr.markForCheck();
+this.selectText()
 }
 
 ///función bool para cambiar el botón de editar tarjeta a false
@@ -424,20 +452,22 @@ updatingCardName() {
       console.error("Card not found in local card array");
       return;
   }
-
+  if(this.cardNameFor === '' || this.cardNameFor === undefined){
+    return;
+  }
   // Actualiza el nombre en la card local
   this.Lists[updatedListIndex].cards[updatedCardIndex].title = this.cardNameFor;
 
 
   const data: Card = {
-      Id: this.selectCard.id,
-      Title: this.cardNameFor,
-      Description: this.selectCard.description,
-      Comment: this.selectCard.comment,
-      Labels: this.selectCard.labels,
-      Cover: this.selectCard.cover,
-      ListId: this.selectCard.listId,
-      Pos: this.selectCard.pos,
+      id: this.selectCard.id,
+      title: this.cardNameFor,
+      description: this.selectCard.description,
+      comment: this.selectCard.comment,
+      labels: this.selectCard.labels,
+      cover: this.selectCard.cover,
+      listId: this.selectCard.listId,
+      pos: this.selectCard.pos,
   };
 
 
@@ -455,14 +485,118 @@ updatingCardName() {
   });
 }
 
-
-goCard(){
-  console.log('goCard')
-}
-
 //!funciones cards fin
 
-// Listener para cerrar los botones de editar y eliminar
+
+//todo:funciones para drog and drop
+
+  onDragStartList(list:any){
+    this.draggingList.set(true);
+    this.selectList = list;
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
+
+  onDropList(){
+    this.draggingList.set(false);
+    const listElement = this.getListElement(this.selectList);
+    listElement?.classList.remove('hidden');
+    this.isFirstDragOver.set(false);
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
+
+
+  onDragOverList(event: any, listPos: any) {
+      // Detener la propagación del evento dragover mientras se procesa un cambio de posición
+      if (this.selectList) {
+          event.preventDefault();
+          event.stopPropagation();
+      }
+
+      // Encuentra los índices de las listas seleccionada y de destino
+      let selectedIndex: any = null;
+      let targetIndex: any = null;
+
+      selectedIndex = this.findIndexList(this.selectList);
+      targetIndex = this.findIndexList(listPos);
+      this.cdr.detectChanges();
+
+      if (selectedIndex !== targetIndex) {
+          this.changePosList(selectedIndex, targetIndex);
+          selectedIndex = this.findIndexList(this.selectList);
+          targetIndex = this.findIndexList(listPos);
+      }
+
+      if (!this.isFirstDragOver()) {
+          this.changeSizePreviewList(this.selectList);
+          this.isFirstDragOver.set(true);
+          this.cdr.detectChanges();
+          this.cdr.markForCheck();
+      }
+  }
+
+
+  onDragEnd(){
+    this.draggingList.set(false)
+    this.isFirstDragOver.set(false)
+    const listElement = this.getListElement(this.selectList);
+    listElement?.classList.remove('hidden');
+    this.cdr.detectChanges();
+  }
+
+  changePosList(selectedIndex:any, targetIndex:any){
+      // Intercambia las posiciones de las listas en el arreglo
+      if (selectedIndex > -1 && targetIndex > -1) {
+        const temp = this.Lists[selectedIndex].pos;
+        this.Lists[selectedIndex].pos = this.Lists[targetIndex].pos;
+        this.Lists[targetIndex].pos = temp;
+        const ListElement = this.getListElement(this.Lists[targetIndex]);
+        ListElement?.classList.remove('hidden');
+
+
+        this.updatingList(this.Lists[selectedIndex]);
+        this.updatingList(this.Lists[targetIndex]);
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      }
+      this.Lists.sort(this.customSort);
+      this.selectList = this.Lists[targetIndex];
+
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+
+  }
+
+  changeSizePreviewList(list: { id: any; }){
+      const listElement = this.getListElement(list);
+      const previewElement = document.getElementById('preview');
+      if (listElement && previewElement) {
+        // Obtener las dimensiones del div inferior
+        const width = listElement.offsetWidth;
+        const height = listElement.offsetHeight;
+        // Aplicar las dimensiones al elemento preview
+        previewElement.style.width = width + 'px';
+        previewElement.style.height = height + 'px';
+        // Otros manejadores de eventos dragstart...
+      }
+      listElement?.classList.add('hidden');
+
+      this.cdr.detectChanges();
+  }
+
+  getListElement(list:any){
+    const listId = `list_${list.id}`;
+    return document.getElementById(listId);
+  }
+
+  findIndexList(list:any){
+  return this.Lists.findIndex((item:any) => item?.id === list?.id);
+  }
+
+//todo:funciones para drog and drop fin
+
+//?* Listener para cerrar los botones de editar y eliminar
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {

@@ -1,10 +1,10 @@
 export interface Card {
-  Id?: number;
-  Title?: string;
-  Description?: string;
-  Comment?: string;
-  Labels?: string;
-  Cover?: string;
-  ListId?: number;
-  Pos?: number;
+  id?: number;
+  title?: string;
+  description?: string;
+  comment?: string;
+  labels?: string;
+  cover?: string;
+  listId?: number;
+  pos?: number;
 }

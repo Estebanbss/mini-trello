@@ -112,9 +112,10 @@ export default class MainComponent {
 
   deleteBoard(id:number){
     this.mainService.deleteBoard(id).then((res) => {
-      res.subscribe((data) => {
         this.deleteButton.set(false);
+        
         this.getBoards()
+        this.cdr.detectChanges();
         this.cdr.markForCheck();
         this.mainService.boardCreated.emit();
         if(this.boards.length === 1){
@@ -124,7 +125,6 @@ export default class MainComponent {
           this.mainService.noBoards.emit();
           this.mainService.boardCreated.emit();
         }
-      })
     })
 
   }

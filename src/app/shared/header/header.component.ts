@@ -36,17 +36,17 @@ import { MainService } from '../../services/main.service';
           </a>
         </div>
         <div class="relative mr-auto">
-          <button id="Button" (click)="boardsS.set(!boardsS())" [ngClass]="[boardsS() ? 'flex hover:dark:bg-blue-900  p-1 px-3 gap-1 rounded-sm  flex-row items-center button font-semibold hover:bg-opacity-30 hover:bg-blue-500 dark:font-semibold fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800' : 'flex p-1 px-3 gap-1 rounded-sm flex-row items-center dark:font-semibold font-semibold dark:fill-white dark:text-white hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15']"  >
+          <button id="Button" (click)="boardsS.set(!boardsS()); $event.stopPropagation()" [ngClass]="[boardsS() ? 'flex hover:dark:bg-blue-900  p-1 px-3 gap-1 rounded-sm  flex-row items-center button font-semibold hover:bg-opacity-30 hover:bg-blue-500 dark:font-semibold fill-blue-500 text-blue-500 bg-blue-400 bg-opacity-25 dark:fill-blue-500 dark:text-blue-500 dark:bg-opacity-50 dark:bg-blue-800' : 'flex p-1 px-3 gap-1 rounded-sm flex-row items-center dark:font-semibold font-semibold dark:fill-white dark:text-white hover:dark:bg-white hover:dark:bg-opacity-15 hover:bg-black hover:bg-opacity-15']"  >
           Boards
-          <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+          <svg class="pointer-events-none" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 -960 960 960" width="16"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
         </button>
         <div id="Container" *ngIf="boardsS()" class="dont absolute max-w-[300px] min-h-[200px] max-h-[200px] overflow-y-scroll scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-gray-400
          dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-600 min-w-[250px] shadow-xl dark:bg-gray-700 mt-3 -left-20 rounded-xl bg-white dark:border-gray-500 border-[0.5px] p-2">
           @if(boards.length > 0){
 
-              <button [routerLink]="['/board',board.id, board.name]" (click)="emitRoute();  boardsS.set(false)" class="w-full h-[50px] flex items-center p-2 dark:bg-white  dark:hover:bg-opacity-10 dark:bg-opacity-0 dark:text-gray-300 text-gray-700  bg-black rounded-sm bg-opacity-0 hover:bg-opacity-10 " *ngFor="let board of boards">
-                <span>{{board.name}}</span>
-                <svg class="ml-auto fill-gray-700 dark:fill-gray-300" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
+              <button [routerLink]="['/board',board.id, board.name]" (click)="emitRoute();  boardsS.set(false); $event.stopPropagation()" class="w-full h-[50px] flex items-center p-2 dark:bg-white  dark:hover:bg-opacity-10 dark:bg-opacity-0 dark:text-gray-300 text-gray-700  bg-black rounded-sm bg-opacity-0 hover:bg-opacity-10 " *ngFor="let board of boards">
+                <span class="pointer-events-none">{{board.name}}</span>
+                <svg class="ml-auto fill-gray-700 dark:fill-gray-300 pointer-events-none" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
               </button>
           }@else{
             <img class="pointer-events-none" src="assets/Img/come.svg">
