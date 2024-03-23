@@ -5,6 +5,7 @@ import { throwError } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { Login } from '../interfaces/user';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +13,8 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private cookies: CookieService
+    private cookies: CookieService,
+    private router: Router
   ) {}
 
   private apiLogin = this.getBaseUrl() + '/login/authenticate';
@@ -48,8 +50,11 @@ export class AuthService {
     this.cookies.delete('user.email');
     this.cookies.delete('user.name');
     this.cookies.delete('user.type');
+    this.cookies.deleteAll();
     localStorage.clear();
-    //luego de cerrar sesion redirigir a la pagina de login
+    localStorage.removeItem('user')
+    //luego
+    window.location.reload();
   }
 
 

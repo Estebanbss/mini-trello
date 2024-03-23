@@ -153,9 +153,7 @@ export class HeaderComponent {
   }
 
   logOut(){
-    localStorage.removeItem('user');
     this.authService.logout();
-    this.router.navigate(['/login']);
   }
 
   emitRoute(){
