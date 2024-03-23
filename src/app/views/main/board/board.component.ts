@@ -53,7 +53,7 @@ creatingList = signal(false);
 updatingListNameBoolean = signal(false);
 deleteButtonList = signal(false);
 editButtonList = signal(false);
-buttonEditChooseList = signal(-1);
+buttonEditChooseList = signal(false);
 
 // Variables relacionadas con las tarjetas (card)
 
@@ -68,9 +68,18 @@ updatingCardNameBoolean = signal(false);
 buttonEditChooseCard = signal(-1);
 
 // variables para el drag and drop
-draggingList = signal(false);
-isFirstDragOver = signal(false)
-listId:any;
+
+  // LISTS
+  draggingList = signal(false);
+  isFirstDragOverList = signal(false)
+  listId:any;
+
+  // CARDS
+  draggingCard = signal(false);
+  isFirstDragOverCard = signal(false)
+  cardId:any;
+
+
 
   constructor() {
     this.boardId.set(parseInt(this.Aroute.snapshot.paramMap.get('id')!));
@@ -114,12 +123,15 @@ listId:any;
     this.cdr.detectChanges();
     // Buscar el elemento input dentro del elemento nativo del componente
     const inputElement = this.elRef.nativeElement.querySelector('input');
+    const textareaElement = this.elRef.nativeElement.querySelector('textarea');
 
     if (inputElement) {
       inputElement.select();
     }
+    if (textareaElement) {
+      textareaElement.select();
+    }
   }
-
 
 /// función para obtener listas y tarjetas
   getListsAndCards(){
@@ -211,13 +223,17 @@ listId:any;
     if(this.listName === '' || this.listName === undefined){
       return;
     }
-
+    this.Lists.push(data);
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+    this.selectText()
     this.mainService.createList(data).then(
       (res:any) =>
         {res.subscribe(
           (data:any) =>
           {
-            this.Lists.push(data);
+            this.Lists[this.Lists.length - 1].id = data.id;
+            this.cdr.detectChanges();
             this.cdr.markForCheck();
             this.listName = '';
           });
@@ -259,6 +275,7 @@ listId:any;
     });
 }
 
+//función para actualizar la list
   updatingList(list:any) {
   this.mainService.updateList(list.id, list).then(
     (res:any) =>
@@ -293,7 +310,7 @@ listId:any;
     this.listNameFor = list.name;
     this.selectList = list;
     this.updatingListNameBoolean.set(true);
-    this.buttonEditChooseList.set(-1);
+    this.buttonEditChooseList.set(false);
     this.cancelEditingBoardName()
     this.cancelCreatingCard()
     this.cancelCreatingList()
@@ -309,7 +326,6 @@ listId:any;
   }
 
 ///eliminar lista
-
   deleteList(list:any){
     this.mainService.deleteList(list.id).then(
       (res:any) =>
@@ -321,6 +337,22 @@ listId:any;
       )
   }
 
+//función para activar el edit list
+  buttonEditList(list:any){
+    this.selectList = list;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+    const listElement = this.getListElement(list);
+
+    const rect = listElement!.getBoundingClientRect();
+    const x = rect.right + window.scrollX;
+    const y = rect.top + window.scrollY;
+    this.cdr.detectChanges();
+    const updatingList = document.getElementById('updatingList');
+    if(updatingList !== null){
+    updatingList.style.transform = `translate(${x}px,${y}px)`
+    }
+  }
 ///*listas fin
 
 ///!cards funciones
@@ -342,13 +374,18 @@ const data:Card = {
 if(this.cardName === '' || this.cardName === undefined){
   return;
 }
-
+list.cards.push(data);
 this.mainService.createCard(data).then(
   (res:any) =>
     {res.subscribe(
       (data:any) =>
       {
-        list.cards.push(data);
+        this.Lists.forEach((item:any) => {
+          if(item.id === list.id){
+            item.cards[item.cards.length - 1].id = data.id;
+          }
+        })
+
         this.cdr.detectChanges();
         this.cdr.markForCheck();
         this.cardName = '';
@@ -358,7 +395,6 @@ this.mainService.createCard(data).then(
 }
 
 ///eliminar tarjeta
-
 deleteCard(card:any){
   this.cancelEditingCardName();
   this.mainService.deleteCard(card.id).then(
@@ -376,7 +412,6 @@ deleteCard(card:any){
 }
 
 ///función bool para cambiar el botón de editar tarjeta
-
 startCreatingCard(i:any){
 this.creatingCardBoolean.set(true);
 this.creatingCardChoose.set(i);
@@ -390,7 +425,6 @@ this.selectText()
 }
 
 ///función bool para cambiar el botón de editar tarjeta a false
-
 cancelCreatingCard(){
 this.creatingCardBoolean.set(false);
 this.creatingCardChoose.set(-1);
@@ -418,6 +452,15 @@ startEditingCardName(card:any, list:any){
   this.selectList = list;
   this.updatingCardNameBoolean.set(true);
   this.buttonEditChooseCard.set(-1);
+  this.cdr.detectChanges();
+  const cardElement = this.getCardElement(card);
+  const rect = cardElement!.getBoundingClientRect();
+  const x = rect.left + window.scrollX;
+  const y = rect.top + window.scrollY - 50;
+  const updatingCard = document.getElementById('updatingCard');
+  if(updatingCard !== null){
+    updatingCard.style.transform = `translate(${x}px,${y}px)`
+  }
   this.cancelEditingBoardName()
   this.cancelCreatingList()
   this.cancelEditingListName()
@@ -429,11 +472,11 @@ startEditingCardName(card:any, list:any){
 }
 
 //función para cambiar el bool de editar nombre de card a false
-
 cancelEditingCardName(){
   this.updatingCardNameBoolean.set(false);
 }
 
+//función para actualizar el nombre de la Card
 updatingCardName() {
   this.cancelEditingCardName();
   if (!this.selectCard) {
@@ -471,24 +514,40 @@ updatingCardName() {
   };
 
 
-  this.mainService.updateCard(this.selectCard.id, data).then(
-      (res: any) => {
-          res.subscribe(
-              (data: any) => {
-                  this.cdr.detectChanges();
-                  this.cdr.markForCheck();
-              });
+
+  try{
+    this.mainService.updateCard(this.selectCard.id, data).then(
+      (res:any) =>
+        {
+            this.selectCard = null;
+            this.selectList = null;
+            this.cdr.detectChanges();
+            this.cdr.markForCheck();
+        }
+    )
+  }catch(e){
+    console.error(e);
+  }
+}
+
+//función para actualizar la card
+updatingCard(card:any) {
+  this.mainService.updateCard(card.id, card).then(
+    (res:any) =>
+      {
+          this.cdr.detectChanges();
+          this.cdr.markForCheck();
+
       }
-  ).then(() => {
-      this.selectList = null;
-      this.selectCard = null;
-  });
+  )
 }
 
 //!funciones cards fin
 
 
 //todo:funciones para drog and drop
+
+// LISTS DRAG FUNCIONES
 
   onDragStartList(list:any){
     this.draggingList.set(true);
@@ -501,11 +560,10 @@ updatingCardName() {
     this.draggingList.set(false);
     const listElement = this.getListElement(this.selectList);
     listElement?.classList.remove('hidden');
-    this.isFirstDragOver.set(false);
+    this.isFirstDragOverList.set(false);
     this.cdr.detectChanges();
     this.cdr.markForCheck();
   }
-
 
   onDragOverList(event: any, listPos: any) {
       // Detener la propagación del evento dragover mientras se procesa un cambio de posición
@@ -528,18 +586,17 @@ updatingCardName() {
           targetIndex = this.findIndexList(listPos);
       }
 
-      if (!this.isFirstDragOver()) {
+      if (!this.isFirstDragOverList()) {
           this.changeSizePreviewList(this.selectList);
-          this.isFirstDragOver.set(true);
+          this.isFirstDragOverList.set(true);
           this.cdr.detectChanges();
           this.cdr.markForCheck();
       }
   }
 
-
-  onDragEnd(){
+  onDragEndList(){
     this.draggingList.set(false)
-    this.isFirstDragOver.set(false)
+    this.isFirstDragOverList.set(false)
     const listElement = this.getListElement(this.selectList);
     listElement?.classList.remove('hidden');
     this.cdr.detectChanges();
@@ -594,6 +651,119 @@ updatingCardName() {
   return this.Lists.findIndex((item:any) => item?.id === list?.id);
   }
 
+  // CARDS DRAG FUNCIONES
+
+  onDragStartCard(card:any, list:any){
+    this.draggingCard.set(true);
+    this.selectCard = card;
+    this.selectList = list;
+    const listElement = this.getListElement(list);
+    console.log(listElement)
+    listElement!.draggable = false;
+    console.log(this.selectCard)
+    console.log(this.selectList)
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
+
+  onDropCard(){
+    this.draggingCard.set(false);
+    const cardElement = this.getCardElement(this.selectCard);
+    cardElement?.classList.remove('hidden');
+    this.isFirstDragOverCard.set(false);
+    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
+
+  onDragOverCard(event:any, cardPos:any){
+    console.log("onDragOver")
+    // Detener la propagación del evento dragover mientras se procesa un cambio de posición
+    if (this.selectCard) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    // Encuentra los índices de las listas seleccionada y de destino
+    let selectedIndex: any = null;
+    let targetIndex: any = null;
+
+    selectedIndex = this.findIndexCard(this.selectCard);
+    targetIndex = this.findIndexCard(cardPos);
+    this.cdr.detectChanges();
+    
+
+    if (selectedIndex !== targetIndex) {
+        this.changePosCard(selectedIndex, targetIndex);
+        selectedIndex = this.findIndexCard(this.selectCard);
+        targetIndex = this.findIndexCard(cardPos);
+    }
+
+    if (!this.isFirstDragOverCard()) {
+        this.changeSizePreviewCard(this.selectCard);
+        this.isFirstDragOverCard.set(true);
+        this.cdr.detectChanges();
+        this.cdr.markForCheck();
+    }
+  }
+
+  onDragEndCard(){
+    this.draggingCard.set(false)
+    this.isFirstDragOverCard.set(false)
+    const cardElement = this.getCardElement(this.selectCard);
+    cardElement?.classList.remove('hidden');
+    this.cdr.detectChanges();
+  }
+
+  changePosCard(selectedIndex:any, targetIndex:any){
+    // Intercambia las posiciones de las listas en el arreglo
+    if (selectedIndex > -1 && targetIndex > -1) {
+      const temp = this.selectList.cards[selectedIndex].pos;
+      this.selectList.cards[selectedIndex].pos = this.selectList.cards[targetIndex].pos;
+      this.selectList.cards[targetIndex].pos = temp;
+      const cardElement = this.getCardElement(this.selectList.cards[targetIndex]);
+      cardElement?.classList.remove('hidden');
+
+      this.updatingCard(this.selectList.cards[selectedIndex]);
+      this.updatingCard(this.selectList.cards[targetIndex]);
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    }
+    this.selectList.cards.sort(this.customSort);
+    this.selectCard = this.selectList.cards[targetIndex];
+
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+
+  }
+
+  changeSizePreviewCard(card:any){
+    const cardElement = this.getCardElement(card);
+    const previewElement = document.getElementById('preview2');
+    if (cardElement && previewElement) {
+      // Obtener las dimensiones del div inferior
+      const width = cardElement.offsetWidth;
+      const height = cardElement.offsetHeight;
+      // Aplicar las dimensiones al elemento preview
+      previewElement.style.width = width + 'px';
+      previewElement.style.height = height + 'px';
+      // Otros manejadores de eventos dragstart...
+    }
+    cardElement?.classList.add('hidden');
+
+    this.cdr.detectChanges();
+  }
+
+  getCardElement(card:any){
+    const cardId = `card_${card?.id}`;
+    return document.getElementById(cardId);
+  }
+
+  findIndexCard(card:any){
+    console.log(card)
+    return this.Lists[this.findIndexList(this.selectList)]?.cards?.findIndex((item:any) => item?.id === card?.id);
+  }
+
+
 //todo:funciones para drog and drop fin
 
 //?* Listener para cerrar los botones de editar y eliminar
@@ -602,7 +772,7 @@ updatingCardName() {
   onClickOutside(event: Event) {
     if (!this.isButtonElement(event.target) && event.target !== document.getElementsByClassName('dont')[0] && !this.isInputElement(event.target)) {
     // Lógica para clics fuera de los botones y elementos con la clase "dont" que no tienen la clase "si".
-    this.buttonEditChooseList.set(-1);
+    this.buttonEditChooseList.set(false);
     this.deleteButtonList.set(false);
     this.editButtonList.set(false);
     this.cancelCreatingList();

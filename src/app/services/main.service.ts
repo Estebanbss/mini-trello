@@ -310,16 +310,16 @@ export class MainService {
       })
     }
 
-    let card = this.http.put<any>(this.apiCard + 'update/' + id , data, httpOptions)
-      .pipe(
-        catchError(error => {
-          console.log(error.error);
-          alert(error.error);
-          return throwError('e');
-        })
-      )
-        return card
+    try {
+      const response = await lastValueFrom(this.http.put<any>(this.apiCard + 'update/' + id, data, httpOptions))
+      return response;
+    }
+    catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
+
 
   async deleteCard(id:number) {
     const httpOptions ={
