@@ -26,7 +26,7 @@ export class MainService {
   private apiCard = this.getBaseUrl() + '/Card/'
 
   getBaseUrl() {
-    return environment.production ? 'https://www.trelloclone.somee.com' : '/api';
+    return environment.production ? 'https://www.trelloclone.somee.com/api' : '/api';
   }
 
 

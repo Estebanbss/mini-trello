@@ -30,9 +30,16 @@ export default class RegisterComponent {
 
   constructor(){
     this.data = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      pwd: ['', [Validators.required, Validators.minLength(4)]]
-    });
+      Email: ['', [Validators.required, Validators.email]],
+      Pwd: ['', [Validators.required, Validators.minLength(4)]],
+      PwdConfirm: ['', Validators.required],
+      Atype: ['User'],
+      Photo: [''], // Nuevo campo para la confirmación de la contraseña
+
+
+
+    }, { validators: this.passwordMatchValidator }); // Agrega validadores personalizados
+
   }
 
   toggleType() {
@@ -55,19 +62,30 @@ export default class RegisterComponent {
 
   submit(){
       this.loading.set(true);
-      let token = this.authService.login(this.data.value)
+      const data = {
+        Username: this.data.value.Email.split('@')[0],
+        Email: this.data.value.Email,
+        Pwd: this.data.value.Pwd,
+        Atype: this.data.value.Atype,
+        Photo: null
+      }
 
-      token.subscribe(
-            (res) => {
-           this.loading.set(false);
-           let token = res as unknown as Token;
-           this.cookies.set('token', token.token)
-           this.router.navigate(['']);
-        },
-        (err) => {
-          this.loading.set(false);
-          console.log(err);
-        }
-      )
+      this.authService.register(data).subscribe((res: any) => {
+        console.log(res);
+        alert('Usuario registrado correctamente');
+        this.router.navigate(['/login']);
+      })
   }
+
+  passwordMatchValidator(formGroup: FormGroup) {
+    const pwd = formGroup.get('Pwd');
+    const pwdConfirm = formGroup.get('PwdConfirm');
+
+    if (pwd && pwdConfirm && pwd.value !== pwdConfirm.value) {
+      pwdConfirm.setErrors({ mismatch: true });
+    } else {
+      pwdConfirm!.setErrors(null);
+    }
+  }
+
  }

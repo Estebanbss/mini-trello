@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, computed, inject, signal } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { User } from '../../interfaces/user';
 import { MainService } from '../../services/main.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -54,7 +55,7 @@ import { MainService } from '../../services/main.service';
           }
         </div>
         </div>
-        
+
         <div class="flex dark:bg-white  dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
             <button (click)="toggleTheme()" class="w-[24px] h-[24px]  rounded-full">
               @if (theme() === 'dark') {
@@ -65,9 +66,9 @@ import { MainService } from '../../services/main.service';
 
             </button>
         </div>
-        
+
         <div class="flex dark:bg-white dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
-            <button  class="w-[24px] h-[24px] rounded-full overflow-hidden">
+            <button (click)="onProfileClick(); $event.stopPropagation()"  class="w-[24px] h-[24px] rounded-full overflow-hidden">
               @if(user){
                 @if (user.photo!==null && user.photo!==undefined){
                 <img [src]="user.photo" class="object cover">
@@ -84,6 +85,11 @@ import { MainService } from '../../services/main.service';
               }
 
             </button>
+            <div *ngIf="onProfile()" class="absolute -bottom-10 right-0 min-[300px] bg-white dark:bg-gray-800 border dark:border-gray-700 border-gray-400">
+              <button (click)="logOut()" class="p-2 w-full  px-4 dark:text-gray-100 font-semibold dark:hover:bg-white dark:hover:bg-opacity-15 hover:bg-black hover:bg-opacity-15 " id="logOut">
+                Log Out
+              </button>
+            </div>
         </div>
 
         </div>
@@ -99,9 +105,12 @@ import { MainService } from '../../services/main.service';
 export class HeaderComponent {
   themeService = inject(ThemeService)
   mainService = inject(MainService)
+  authService = inject(AuthService)
+  router = inject(Router)
   cdr = inject(ChangeDetectorRef);
   user!: User;
   boards:any = [];
+  onProfile = signal(false);
   constructor() {
     this.themeService.getTheme();
     this.theme.set(this.themeService.getTheme());
@@ -136,6 +145,17 @@ export class HeaderComponent {
     } );
 
 
+  }
+
+  onProfileClick(){
+    this.onProfile.set(!this.onProfile());
+
+  }
+
+  logOut(){
+    localStorage.removeItem('user');
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   emitRoute(){
@@ -179,6 +199,7 @@ export class HeaderComponent {
   onClickOutside(event: Event) {
     if (!this.isButtonElement(event.target) && event.target !== document.getElementsByClassName('dont')[0]) {
       this.boardsS.set(false);
+      this.onProfile.set(false);
     }
 }
 private isButtonElement(target: EventTarget | null): boolean {

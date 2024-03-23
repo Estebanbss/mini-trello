@@ -29,10 +29,24 @@ export class AuthService {
     );
   }
 
-  getBaseUrl() {
-    return environment.production ? 'https://www.trelloclone.somee.com' : '/api';
+  register(data: any) {
+    return this.http.post(this.getBaseUrl() + '/account/create', data).pipe(
+      catchError(error => {
+        console.error(error.error.message);
+        alert(error.error.message);
+        return throwError('e');
+      })
+    );
   }
 
+  getBaseUrl() {
+    return environment.production ? 'https://www.trelloclone.somee.com/api' : '/api';
+  }
+
+  async logout() {
+    this.cookies.deleteAll();
+    //luego de cerrar sesion redirigir a la pagina de login
+  }
 
 
   async getToken(): Promise<string | null> {
