@@ -54,6 +54,7 @@ import { MainService } from '../../services/main.service';
           }
         </div>
         </div>
+        
         <div class="flex dark:bg-white  dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
             <button (click)="toggleTheme()" class="w-[24px] h-[24px]  rounded-full">
               @if (theme() === 'dark') {
@@ -64,6 +65,7 @@ import { MainService } from '../../services/main.service';
 
             </button>
         </div>
+        
         <div class="flex dark:bg-white dark:hover:bg-opacity-10 dark:bg-opacity-0  bg-black rounded-full bg-opacity-0 hover:bg-opacity-10  items-center justify-center w-[32px] h-[32px]">
             <button  class="w-[24px] h-[24px] rounded-full overflow-hidden">
               @if(user){

@@ -18,14 +18,6 @@ export const routes: Routes = [
         loadComponent: () => import('./views/main/board/board.component')
       },
 
-      {
-        path:'card/:id',
-        canActivate: [homeGuard],
-        title: 'Cards',
-        loadComponent: () => import('./views/main/card/card.component')
-
-      }
-
     ]
 
   },
