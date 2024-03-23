@@ -1,8 +1,8 @@
 {
-  "/api": {
-    "target": "http://www.trelloclone.somee.com/",
+  "/api/**": {
+    "target": "https://trelloclone.somee.com/",
     "secure": false,
+    "logLevel": "debug",
     "changeOrigin": true
   }
 }
-  

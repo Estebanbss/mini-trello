@@ -33,9 +33,16 @@
             "ssr": {
               "entry": "server.ts"
             }
+
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -61,12 +68,12 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
+            "buildTarget": "mini-trello:build",
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "buildTarget": "mini-trello:build:production",
-              "proxyConfig": "proxy.conf.json"
+              "buildTarget": "mini-trello:build:production"
             },
             "development": {
               "buildTarget": "mini-trello:build:development"
@@ -99,7 +106,10 @@
           }
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          }
         }
       }
     }

@@ -5,6 +5,7 @@ import { catchError, last, lastValueFrom, of, throwError } from 'rxjs';
 import { Board } from '../interfaces/board';
 import { Console } from 'console';
 import { Card } from '../interfaces/cards';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -19,10 +20,15 @@ export class MainService {
   private userEmail = this.cookies.get('user.email')
   private userName = this.cookies.get('user.name')
   private userType = this.cookies.get('user.type')
-  private apiAccount = '/api/Account/getbyemail/' + this.userEmail
-  private apiBoard = '/api/Board/'
-  private apiList = '/api/List/'
-  private apiCard = '/api/Card/'
+  private apiAccount = this.getBaseUrl() + '/Account/getbyemail/' + this.userEmail
+  private apiBoard = this.getBaseUrl() + '/Board/'
+  private apiList = this.getBaseUrl() + '/List/'
+  private apiCard = this.getBaseUrl() + '/Card/'
+
+  getBaseUrl() {
+    return environment.production ? 'https://www.trelloclone.somee.com' : '/api';
+  }
+
 
   async getUserId() {
     // Esperar a que se obtenga el ID del usuario
