@@ -44,7 +44,11 @@ export class AuthService {
   }
 
   async logout() {
-    this.cookies.deleteAll();
+    this.cookies.delete('token');
+    this.cookies.delete('user.email');
+    this.cookies.delete('user.name');
+    this.cookies.delete('user.type');
+    localStorage.clear();
     //luego de cerrar sesion redirigir a la pagina de login
   }
 
