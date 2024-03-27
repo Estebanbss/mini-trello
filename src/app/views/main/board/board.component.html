@@ -3,7 +3,7 @@
   <div #bgblack *ngIf="updatingCardNameBoolean() === true" class="fixed min-w-full min-h-full bg-black bg-opacity-60 top-0 left-0 z-40 yes"></div>
   <div #bgblackCard *ngIf="cardReady() === true" class="fixed min-w-full min-h-full bg-black bg-opacity-60 top-0 left-0 z-40 yes"></div>
 
-<div (keydown.esc)="cancelCard()" *ngIf="cardReady()"  class="fixed h-auto rounded-lg  min-w-full w-full md:min-w-[768px] md:w-[768px] z-50 dark:bg-gray-800 bg-white top-20   right-[50%] translate-x-[50%] ">
+<div (keydown.esc)="cancelCard()" *ngIf="cardReady()"  class="fixed h-auto rounded-lg  min-w-full w-full md:min-w-[768px] md:w-[768px] z-50 dark:bg-gray-800 bg-gray-100 top-20   right-[50%] translate-x-[50%] ">
 
   <div id="cardHeader" class="w-full min-h-[80px] relative dont py-2 pl-[56px] pr-[52px]">
       <span (click)="$event.stopPropagation()" class="w-[40px] h-[40px] dont flex justify-center items-center absolute left-0 top-2 p-[6px] mx-2  rounded-full dark:fill-white fill-gray-600  ">
@@ -16,7 +16,7 @@
           (keydown.esc)="cancelCard()"
           (keydown.enter)="$event.preventDefault()"
           maxlength="50"
-          class="mt-2 p-1 py-0 resize-none px-[10px] w-full text-left text-[20px] font-semibold min-h-[33px] dont h-[33px] break-inside-auto overflow-y-hidden break-words whitespace-nowrap text-nowrap flex-nowrap dark:bg-gray-800 dark:text-gray-100"
+          class="mt-2 p-1 py-0 resize-none px-[10px] w-full text-left text-[20px] font-semibold min-h-[33px] dont h-[33px] break-inside-auto overflow-y-hidden break-words whitespace-nowrap bg-gray-100 text-nowrap flex-nowrap dark:bg-gray-800 dark:text-gray-100"
           [(ngModel)]="cardNameFor"
           (keyup.enter)="updateCard(); blurTextArea($event); $event.preventDefault()">
       </textarea>
@@ -86,7 +86,7 @@
             </button>
         </div>
 
-          <p *ngIf="!onComment()" (click)="startEditComment()" class="text-sm text-left w-full bg-gray-900 p-2 rounded-md dark:text-white  break-words  ">
+          <p *ngIf="!onComment()" (click)="startEditComment()" class="text-sm text-left w-full dark:bg-gray-900 p-2 rounded-md dark:text-white  break-words  bg-white border shadow-sm dark:border-none">
             {{ selectCard.comment }}
           </p>
         </div>
