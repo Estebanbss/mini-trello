@@ -57,8 +57,8 @@ export class MainService {
     const user = this.http.get<any>(this.apiAccount, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          
+      
           return throwError('e');
         })
       )
@@ -82,8 +82,8 @@ export class MainService {
             console.log('Theres no Boards :', res);
             return of(null); // Devuelve null si no se encuentran tarjetas
         } else {
-            console.log('Error:', error.error.message);
-            alert(error.error.message);
+            
+      
             return throwError('e');
         }
         })
@@ -105,8 +105,8 @@ export class MainService {
     let board = this.http.post<any>(this.apiBoard + 'create' , data, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          
+  
           return throwError('e');
         })
       )
@@ -163,8 +163,8 @@ export class MainService {
     let board = this.http.put<any>(this.apiBoard + 'update/' + id , data, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          
+    
           return throwError('e');
         })
       )
@@ -183,8 +183,8 @@ export class MainService {
     let list = this.http.post<any>(this.apiList + 'create' , data, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          
+  
           return throwError('e');
         })
       )
@@ -207,8 +207,8 @@ export class MainService {
               console.log('Not found Lists in Board id:', id);
               return of(null); // Devuelve null si no se encuentran tarjetas
           } else {
-              console.log('Error:', error.error.message);
-              alert(error.error.message);
+              
+      
               return throwError('e');
           }
           })
@@ -261,7 +261,7 @@ export class MainService {
       return response;
     } catch (error) {
       console.error(error);
-      alert(error); // Considera usar un mecanismo de notificación más sofisticado
+   // Considera usar un mecanismo de notificación más sofisticado
       throw error; // Lanza el error nuevamente para que pueda ser manejado en un nivel superior
     }
 }
@@ -277,8 +277,8 @@ export class MainService {
     let card = this.http.post<any>(this.apiCard + 'create' , data, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          
+        
           return throwError('e');
         })
       )
@@ -299,8 +299,8 @@ export class MainService {
           if (error.status === 404) {
             return of([]); // Devuelve null si no se encuentran tarjetas
         } else {
-            console.log('Error:', error.error.message);
-            alert(error.error.message);
+            
+    
             return throwError('e');
         }
         })
@@ -338,8 +338,8 @@ export class MainService {
     let card = this.http.delete<any>(this.apiCard + 'delete/' + id, httpOptions)
       .pipe(
         catchError(error => {
-          console.log(error.error.message);
-          alert(error.error.message);
+          
+  
           return throwError('e');
         })
       )
