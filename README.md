@@ -1,6 +1,6 @@
 # MiniTrello
 
-(https://github.com/Estebanbss/mini-trello/blob/master/.github/workflows/TrelloClone.gif)
+[![forthebadge](https://github.com/Estebanbss/mini-trello/blob/master/.github/workflows/TrelloClone.gif)
 
 ## Development server
 
