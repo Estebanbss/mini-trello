@@ -1,6 +1,6 @@
 # MiniTrello
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8.
+(https://github.com/Estebanbss/mini-trello/blob/master/.github/workflows/TrelloClone.gif)
 
 ## Development server
 
