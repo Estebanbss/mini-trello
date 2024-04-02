@@ -34,7 +34,7 @@ export default class RegisterComponent {
       Pwd: ['', [Validators.required, Validators.minLength(4)]],
       PwdConfirm: ['', Validators.required],
       Atype: ['User'],
-      Photo: [''], // Nuevo campo para la confirmación de la contraseña
+      Photo: [''], // Nuevo cam po para la confirmación de la contraseña
 
 
 
@@ -60,7 +60,7 @@ export default class RegisterComponent {
     }
   }
 
-  submit(){
+    submit(){
       this.loading.set(true);
       const data = {
         Username: this.data.value.Email.split('@')[0],
