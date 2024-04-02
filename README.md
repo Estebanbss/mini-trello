@@ -1,27 +1,22 @@
 # MiniTrello
-
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.8.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+"Mini-Trello" is a simple trello clone. This project aims to replicate the functionality of Trello while incorporating improvements and fixes to improve user experience and performance by making it simpler.
+### [Demo](https://estebanbss.github.io/mini-trello) ▶️
+## Overview
+![forthebadge](https://github.com/Estebanbss/mini-trello/blob/master/.github/workflows/Mini%20trello.gif)
+## Features ⭐
+- Login/Register with JWT token authentication
+- Ability to create/update/delete the boards
+- Ability to add/update/move/delete the cards
+- Ability to add/update/move/delete the lists
+- Add labels to the cards
+- Supports adding of detail description in the cards
+- Theme mode
+## Stack 📚⛏️
+![](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![](https://img.shields.io/badge/Microsoft_SQL_Server-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
+## Next Features 🚀
+- Profile editing
+- Adding multiple accounts to a dashboard
+- Customizing dashboard background
+- UI bug fixes and improved UX
