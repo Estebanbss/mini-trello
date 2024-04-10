@@ -849,7 +849,7 @@ updateCardLabel(label:any){
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
-    if (!this.isButtonElement(event.target) && event.target !== document.getElementsByClassName('dont')[0] && !this.isInputElement(event.target) && !this.isTextAreaElement(event.target)) {
+    if (!this.isButtonElement(event.target) && event.target !== document.getElementsByClassName('dont')[0] && !this.isInputElement(event.target) && !this.isTextAreaElement(event.target) && !this.isSpanElement(event.target)) {
     // Lógica para clics fuera de los botones y elementos con la clase "dont" que no tienen la clase "si".
     this.buttonEditChooseList.set(false);
     this.deleteButtonList.set(false);
@@ -876,6 +876,10 @@ updateCardLabel(label:any){
 
   private isTextAreaElement(target: EventTarget | null): boolean {
     return target instanceof HTMLTextAreaElement;
+  }
+
+  private isSpanElement(target: EventTarget | null): boolean {
+    return target instanceof HTMLSpanElement;
   }
 
 }
